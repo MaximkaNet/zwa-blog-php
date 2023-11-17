@@ -1,0 +1,34 @@
+.navbar {
+    width: 100%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+.navbar .search-container{
+    border-bottom: 2px solid var(--third-color);
+}
+
+.search-container input {
+    background: none;
+    width: 0;
+    outline: none;
+    color: white;
+    font-size: 11pt;
+}
+
+input:focus {
+    width: auto;
+}
+
+.search-container img {
+    max-width: 16px;
+}
+
+.topic-link {
+    margin-left: 30px;
+}
+
+.navbar .topics .current{
+    color: var(--third-color);
+}

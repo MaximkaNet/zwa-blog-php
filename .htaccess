@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# Uncomment these lines to exclude specific file types from the rewrite rule
+RewriteCond %{REQUEST_URI} !(\.png|\.jpg|\.webp|\.gif|\.jpeg|\.zip|\.css|\.svg|\.js|\.pdf|\.ico)$
+#RewriteCond %{REQUEST_URI} !-f
+
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Rewrite all other requests to index.php
+RewriteRule ^ public/index.php [L]
