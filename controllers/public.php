@@ -10,9 +10,9 @@ class PublicController
     {
         Application::setPageName('Home');
 
-        $posts = PostsService::getAll();
+//        $posts = PostsService::getAll();
 
-        include "views\home.php";
+        include "../views/index.php";
     }
 
     public static function search(): void
