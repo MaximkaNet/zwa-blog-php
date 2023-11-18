@@ -6,20 +6,20 @@ Application::setPageName('Login');
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once "views\common\head.php"; ?>
+<?php include_once "../views/common/head.php"; ?>
 <body class="bg-solid full-width full-height">
     <?php
-        if($_SERVER["REQUEST_METHOD"] == "POST") {
-            if($_POST['email'] == 'mail@gmail.com' && $_POST['password'] == '123'){
-                session_start();
-                $_SESSION['is_auth'] = true;
-                $_SESSION['id'] = 123;
-                header('Location: ' . Router::absoluteLink('/'));
-            }
-            else{
-                echo 'Incorrect data!';
-            }
-        }
+//        if($_SERVER["REQUEST_METHOD"] == "POST") {
+//            if($_POST['email'] == 'mail@gmail.com' && $_POST['password'] == '123'){
+//                session_start();
+//                $_SESSION['is_auth'] = true;
+//                $_SESSION['id'] = 123;
+//                header('Location: ' . Router::absoluteLink('/'));
+//            }
+//            else{
+//                echo 'Incorrect data!';
+//            }
+//        }
     ?>
     <form class="login-form mg-center flex-container flex-col max-w-200 relative" method="post">
         <img class="logo mg-center" src="../../assets/images/logo.svg" alt="logo">
@@ -32,7 +32,7 @@ Application::setPageName('Login');
                 type="email"
                 name="email"
                 placeholder="email"
-                value="<?php echo $_POST['email'] == "" ? "" : $_POST['email'] ?>"
+                value="<?php //echo $_POST['email'] == "" ? "" : $_POST['email'] ?>"
             >
         </div>
         <div class="login-input-wrapper input-container flex-container">

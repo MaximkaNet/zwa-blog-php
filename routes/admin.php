@@ -1,6 +1,6 @@
 <?php
 
-require_once 'controllers\admin.php';
+require_once '../controllers/admin.php';
 
 use app\core\Application;
 use app\controllers\AdminController;

@@ -1,6 +1,6 @@
 <?php
 
-require_once 'controllers\auth.php';
+require_once '../controllers/auth.php';
 
 use app\core\Application;
 use app\controllers\AuthController;
