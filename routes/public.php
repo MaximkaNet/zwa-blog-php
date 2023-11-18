@@ -1,6 +1,6 @@
 <?php
 
-require_once "..\controllers\public.php";
+require_once "../controllers/public.php";
 
 use app\core\Application;
 use app\controllers\PublicController;
