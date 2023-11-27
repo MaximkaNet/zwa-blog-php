@@ -35,7 +35,11 @@ class Test {
             printLine("Test ". $i + 1 . ": " . $this->tests[$i]["title"]);
             try {
                 $result = $this->tests[$i]["callback"]();
-                printLine("Result test " . $i + 1 .":\n" . $result);
+                printLine("Result test " . $i + 1 .":");
+                if(!$result)
+                    printLine("Without result");
+                else
+                    printLine($result);
                 $passed++;
             } catch (\Exception $exception){
                 printLine("Test error: " . $exception);
