@@ -2,16 +2,22 @@
 
 namespace app\domain\entity;
 
+require_once "../../core/entity.php";
+use app\core\entity\Entity;
+
 require_once "categoryException.php";
 use app\domain\exception\CategoryException;
 
-class Category
+class Category extends Entity
 {
-    private ?int $id;
-    private ?string $name;
-    private ?string $display_name;
+    protected ?int $id;
+    protected ?string $name;
+    protected ?string $display_name;
 
-    public function __construct(int $id = null, string $name = null, string $display_name = null)
+    public function __construct(
+        int $id = null,
+        string $name = null,
+        string $display_name = null)
     {
         $this->id = $id;
         $this->name = $name;
@@ -19,44 +25,6 @@ class Category
     }
 
     /**
-     * Return associative array of vars and values of class
-     * @param ?array $exclude
-     * @return array
-     */
-    public function toAssoc(array $exclude = null): array
-    {
-        $assoc_result = [];
-        $reflection = new \ReflectionClass(self::class);
-        $props = $reflection->getProperties();
-        foreach ($props as $prop){
-            $key = $prop->getName();
-            $assoc_result[$key] = $this->$key;
-        }
-        // Key exclusion
-        if(isset($exclude))
-            $assoc_result = array_diff($assoc_result, $exclude);
-        return $assoc_result;
-    }
-
-    /**
-     * Return an array of column names
-     * @return string[]
-     */
-    public static function getPropertyKeys(array $exclude = null): array
-    {
-        $reflection = new \ReflectionClass(self::class);
-        $props = $reflection->getProperties();
-        $property_names = [];
-        foreach ($props as $prop){
-            $property_names[] = $prop->getName();
-        }
-        if(isset($exclude))
-            $property_names = array_diff($property_names, $exclude);
-        return $property_names;
-    }
-
-    /**
-     * Return id
      * @return int
      */
     public function getId(): int
@@ -65,7 +33,6 @@ class Category
     }
 
     /**
-     * Set model id
      * @param int $id
      */
     public function setId(int $id): void

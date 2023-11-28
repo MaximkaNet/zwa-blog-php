@@ -1,9 +1,11 @@
 <?php
 namespace app\domain\entity;
 
-use \ReflectionClass;
+require_once "../../core/entity.php";
 
-class User
+use app\core\entity\Entity;
+
+class User extends Entity
 {
     private ?int $id;
     private ?string $email;
@@ -36,42 +38,6 @@ class User
         $this->first_name = $first_name;
         $this->last_name = $last_name;
         $this->avatar = $avatar;
-    }
-
-    /**
-     * Return associative array of vars and values of class
-     * @param ?array $exclude
-     * @return array
-     */
-    public function toAssoc(array $exclude = null): array
-    {
-        $assoc_arr = [];
-        $keys = get_class_vars(self::class);
-        foreach ($keys as $key => $value){
-            $assoc_arr[$key] = $this->$key;
-        }
-        // Key exclusion
-        if(isset($exclude)) foreach ($exclude as $key) {
-            unset($assoc_arr[$key]);
-        }
-        return $assoc_arr;
-    }
-
-    /**
-     * Return an array of column names
-     * @return string[]
-     */
-    public static function getPropertyKeys(array $exclude = null): array
-    {
-        $reflection = new ReflectionClass(self::class);
-        $props = $reflection->getProperties();
-        $property_names = [];
-        foreach ($props as $prop){
-            $property_names[] = $prop->getName();
-        }
-        if(isset($exclude))
-            $property_names = array_diff($property_names, $exclude);
-        return $property_names;
     }
 
     /**
