@@ -7,12 +7,12 @@ use app\core\entity\Entity;
 
 class User extends Entity
 {
-    private ?int $id;
-    private ?string $email;
-    private ?string $password; /* Bcrypt hash (60 chars)*/
-    private ?string $first_name;
-    private ?string $last_name;
-    private ?string $avatar;
+    protected ?int $id;
+    protected ?string $email;
+    protected ?string $password; /* Bcrypt hash (60 chars)*/
+    protected ?string $first_name;
+    protected ?string $last_name;
+    protected ?string $avatar;
 
     /**
      * Init a user

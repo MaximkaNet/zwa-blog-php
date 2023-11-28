@@ -10,9 +10,9 @@ require_once "../users/user.php";
 
 class Comment extends Entity
 {
-    private ?int $id;
-    private ?User $author;
-    private ?string $content;
+    protected ?int $id;
+    protected ?User $author;
+    protected ?string $content;
 //    private ?Comment $parent;
     private bool $is_edited;
 

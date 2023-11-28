@@ -9,14 +9,14 @@ require_once "../categories/category.php";
 
 class Post extends Entity
 {
-    private ?int $id;
-    private ?string $title;
-    private ?string $content;
-    private ?int $rating;
-    private ?int $count_saved;
-    private ?User $user;
-    private ?Category $category;
-    private bool $is_edited;
+    protected ?int $id;
+    protected ?string $title;
+    protected ?string $content;
+    protected ?int $rating;
+    protected ?int $count_saved;
+    protected ?User $user;
+    protected ?Category $category;
+    protected bool $is_edited;
 
     /**
      * Init a post
