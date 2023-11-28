@@ -14,7 +14,7 @@ class Comment extends Entity
     protected ?User $author;
     protected ?string $content;
 //    private ?Comment $parent;
-    private bool $is_edited;
+    protected bool $is_edited;
 
     public function __construct(
         int $id = null,
