@@ -35,6 +35,10 @@ class QueryBuilder
     private ?array $body = null;
     private ?array $columns = null;
     private ?array $values = null;
+    /**
+     * @deprecated
+     * @var array|null
+     */
     private ?array $to_update = null;
     private ?array $where = null;
     private ?array $join = null;
@@ -44,8 +48,8 @@ class QueryBuilder
 
     /**
      * Init a builder
-     * @param ?int $method
-     * @param ?string $table_name
+     * @param int|null $method
+     * @param string|null $table_name
      */
     public function __construct(int $method = null, string $table_name = null)
     {
@@ -55,7 +59,7 @@ class QueryBuilder
 
     /**
      * Select statement
-     * @param ?array $columns
+     * @param array|null $columns
      * @return $this
      */
     public function select(array $columns = null): self {
@@ -111,6 +115,11 @@ class QueryBuilder
         return $this;
     }
 
+    /**
+     * Set from statement
+     * @param string $table_name
+     * @return $this
+     */
     public function from(string $table_name): self {
         $this->table_name = $table_name;
         return $this;
@@ -118,7 +127,7 @@ class QueryBuilder
 
     /**
      * Set where conditions
-     * @param ?array $where
+     * @param array|null $where
      * @return $this
      */
     public function where(?array $where): self
@@ -252,7 +261,7 @@ class QueryBuilder
 
     /**
      * Return joined columns
-     * @return ?string
+     * @return string|null
      */
     private function buildColumns(): ?string
     {
@@ -306,7 +315,7 @@ class QueryBuilder
 
     /**
      * Build join relations
-     * @return ?string
+     * @return string|null
      */
     private function buildJoin(): ?string
     {
@@ -383,7 +392,7 @@ class QueryBuilder
 
     /**
      * Check value if is operator or no
-     * @param ?string $value
+     * @param string|null $value
      * @return bool
      */
     private static function isOp(?string $value): bool
@@ -397,33 +406,30 @@ class QueryBuilder
     }
 
     /**
-     * Bind values to statement
-     * @param PDOStatement $statement
-     * @return void
+     * Return the values that will be bound in the query
+     * @return array|null
      * @throws QueryBuilderException
      */
-    public function bindValues(PDOStatement &$statement): void
+    public function getValuesToBind(): ?array
     {
-        match ($this->method){
-            self::QUERY_SELECT => $this->_bindValues($statement, $this->where),
-            self::QUERY_INSERT => $this->_bindValues($statement, $this->values),
-            self::QUERY_UPDATE => $this->_bindValues($statement, [...$this->values, ...$this->where]),
-            self::QUERY_DELETE => $this->_bindValues($statement, $this->where),
+        return match ($this->method){
+            self::QUERY_SELECT, self::QUERY_DELETE => $this->_prepareValuesToBind($this->where),
+            self::QUERY_INSERT => $this->_prepareValuesToBind($this->values),
+            self::QUERY_UPDATE => $this->_prepareValuesToBind([...$this->values, ...$this->where]),
             default => throw QueryBuilderException::InvalidMethod(),
         };
     }
 
     /**
      * Bind values to statement
-     * @param PDOStatement $statement
-     * @param ?array $values
-     * @return void
+     * @param array|null $values
+     * @return array|null
      * @throws QueryBuilderException
      */
-    private function _bindValues(PDOStatement &$statement, ?array $values): void
+    private function _prepareValuesToBind(?array $values): ?array
     {
-        // Throw exception if values is null
-        if(empty($values)) throw QueryBuilderException::EmptyValues();
+        if(empty($values)) return null;
+        $values_to_bind = [];
         foreach ($values as $key => $value) {
             // Skip the operator
             if(QueryBuilder::isOp($key)) continue;
@@ -435,8 +441,10 @@ class QueryBuilder
             elseif (is_null($value)) $param_type = PDO::PARAM_NULL;
             else throw QueryBuilderException::UnsupportedType();
 
-            // Bind a value
-            $statement->bindValue(sprintf($this->param_format, $this->table_name, $key), $value, $param_type);
+            // Add value to bind
+            $formatted_param = sprintf($this->param_format, $this->table_name, $key);
+            $values_to_bind[$formatted_param] = ["type" => $param_type, "value" => $value];
         }
+        return $values_to_bind;
     }
 }

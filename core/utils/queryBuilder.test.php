@@ -166,5 +166,11 @@ $test_handler->addTest("Select one function", function () {
 $test_handler->addTest("Select by id function", function () {
     return selectById(0);
 });
+$test_handler->addTest("Get values to bind", function (){
+    $qb = new QueryBuilder();
+    $qb->select()->from("test");
+    $qb->where(["id" => 1, "name" => "User"]);
+    return var_export($qb->getValuesToBind(), true);
+});
 // Start test bench
 $test_handler->start();
