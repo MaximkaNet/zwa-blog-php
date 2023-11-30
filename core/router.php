@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * PHP version 7.2
+ */
 namespace app\core\router;
 class Router {
     private $routes = [];
