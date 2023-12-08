@@ -1,12 +1,9 @@
 <?php
 
-namespace app\core\utils;
+namespace app\core\utils\queryBuilder;
 
 require_once "queryBuilderException.php";
 
-use app\core\utils\exception\QueryBuilderException;
-
-use PDOStatement;
 use PDO;
 
 class QueryBuilder
@@ -266,32 +263,18 @@ class QueryBuilder
      */
     private function buildColumns(): ?string
     {
-//        $example = [
-//            "id",
-//            "pass",
-//            "author" => [
-//                "id",
-//                "pass"
-//            ],
-//            "cat" => [
-//                "id",
-//                "ssf"
-//            ],
-//            "count_saved"
-//        ];
-        $columns = null;
-        if(isset($this->columns)) {
-            foreach ($this->columns as $table_name => $column) {
-                if(is_array($column)){
-                    $nested_table = $column;
-                    foreach ($nested_table as $nested_column) {
-                        $columns[] = "`$table_name`.`$nested_column`";
-                    }
+        if(empty($this->columns)) return null;
+        $cols_arr = [];
+        foreach ($this->columns as $table => $column){
+            // Handle nested columns
+            if(is_array($column)){
+                foreach ($column as $nested_column) {
+                    $cols_arr[] = "`$table`.`$nested_column`";
                 }
-                else $columns[] = "`$this->table_name`.`$column`";
             }
+            else $cols_arr[] = "`$column`";
         }
-        return isset($columns) ? implode(",", $columns) : null;
+        return implode(",", $cols_arr);
     }
 
     /**
@@ -307,7 +290,12 @@ class QueryBuilder
                 if(QueryBuilder::isOp($value))
                     $where[] = $value;
                 else
-                    $where[] = "`$this->table_name`.`$key`" . "=" . sprintf($this->param_format, $this->table_name, $key);
+                    if(preg_match("/\w\.\w/", $key)) {
+                        $parts = explode(".", $key);
+                        $where[] = "`$parts[0]`.`$parts[1]`" . "=" . sprintf($this->param_format, $parts[0], $parts[1]);
+                    }
+                    else
+                        $where[] = "`$this->table_name`.`$key`" . "=" . sprintf($this->param_format, $this->table_name, $key);
             }
             $where = implode(" ", $where);
         }

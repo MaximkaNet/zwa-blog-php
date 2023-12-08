@@ -1,6 +1,6 @@
 <?php
 
-namespace app\core\utils\exception;
+namespace app\core\utils\queryBuilder;
 
 class QueryBuilderException extends \Exception
 {

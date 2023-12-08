@@ -5,10 +5,15 @@
  */
 
 namespace app\core\utils;
-require_once "test.php";
+require_once "../test.php";
 require_once "queryBuilder.php";
 require_once "queryBuilderException.php";
-use app\core\utils\exception\QueryBuilderException;
+
+use app\core\utils\queryBuilder\QueryBuilder;
+use app\core\utils\queryBuilder\QueryBuilderException;
+
+require_once "../columnsGenerator/columnsGenerator.php";
+use app\core\utils\columnsGenerator\ColumnsGenerator;
 
 define("TABLE_NAME", "users");
 define("COLUMN_NAMES", ['id','title', 'content', 'count_saved', 'createdAt']);
@@ -171,5 +176,36 @@ $test_handler->addTest("Get values to bind", function (){
     $qb->where(["id" => 1, "name" => "User"]);
     return var_export($qb->getValuesToBind(), true);
 });
+$test_handler->addTest("Generate columns using ColumnsGenerator", function (){
+    $qb = new QueryBuilder();
+
+    $cg = new ColumnsGenerator();
+    $cg->setColumns(["id", "name", "last_name", "birthday", "category"]);
+    $cg->setRules(["category" => "category_name"]);
+    $generated_cols = $cg->generateSchemeAssoc();
+
+    $qb->select($generated_cols)->from("test");
+    $qb->where(["id" => 1, "name" => "User"]);
+    return var_export($qb->build(), true);
+});
+$test_handler->addTest("Generate columns using ColumnsGenerator with nested columns", function (){
+    $qb = new QueryBuilder();
+
+    $cg = new ColumnsGenerator();
+    $cg->setColumns(["id", "name", "last_name", "birthday", "category", "author"]);
+    $users_cols = ["id", "fist_name", "last_name", "role"];
+    $rules = [
+        "category" => "category_name",
+        "author" => ["users" => $users_cols]
+    ];
+    $cg->setRules($rules);
+    $generated_cols = $cg->generateSchemeAssoc();
+
+    $qb->select($generated_cols)->from("test");
+    $qb->join(QueryBuilder::INNER_JOIN, "users", ["id" => "users.id"]);
+    $qb->where(["name" => "User", QueryBuilder::OP_AND, "users.id" => 1]);
+    return var_export($qb->build(), true);
+});
+
 // Start test bench
 $test_handler->start();
