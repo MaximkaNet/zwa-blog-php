@@ -1,12 +1,13 @@
 <?php
 
-namespace app\core\query;
+namespace app\core\utils;
 
-require_once "exception.php";
+require_once "queryBuilderException.php";
 
-use app\core\exception\QueryBuilderException;
-use \PDOStatement;
-use \PDO;
+use app\core\utils\exception\QueryBuilderException;
+
+use PDOStatement;
+use PDO;
 
 class QueryBuilder
 {

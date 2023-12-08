@@ -4,12 +4,11 @@
  * Tests for query builder class
  */
 
-namespace test\query_builder;
-require_once "queryBuilder.php";
+namespace app\core\utils;
 require_once "test.php";
-use app\core\query\QueryBuilder;
-use app\core\exception\QueryBuilderException;
-use test\Test;
+require_once "queryBuilder.php";
+require_once "queryBuilderException.php";
+use app\core\utils\exception\QueryBuilderException;
 
 define("TABLE_NAME", "users");
 define("COLUMN_NAMES", ['id','title', 'content', 'count_saved', 'createdAt']);
