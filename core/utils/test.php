@@ -1,6 +1,6 @@
 <?php
 
-namespace test;
+namespace app\core\utils;
 
 function printLine(string $value, string $prefix = null): void
 {
