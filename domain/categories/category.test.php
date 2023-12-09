@@ -1,13 +1,12 @@
 <?php
 
-namespace test\model;
+namespace app\domain\categories;
 
-require_once "../../core/test.php";
-use test\Test;
+require_once "../../core/utils/test.php";
+use app\core\utils\Test;
 
 // Category entity
 require_once "category.php";
-use app\domain\entity\Category;
 
 $test_handler = new Test();
 $test_handler->addTest("Get keys", function (){

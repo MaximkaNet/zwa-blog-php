@@ -1,12 +1,11 @@
 <?php
 
-namespace app\domain\entity;
+namespace app\domain\categories;
 
 require_once "../../core/entity.php";
 use app\core\entity\Entity;
 
 require_once "categoryException.php";
-use app\domain\exception\CategoryException;
 
 class Category extends Entity
 {
