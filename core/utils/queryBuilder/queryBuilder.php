@@ -311,10 +311,14 @@ class QueryBuilder
         $join = null;
         if(isset($this->join)){
             $join = [$this->join["type"]];
-            if(is_array($this->join["tables"]))
-                $join[] = "(". implode(",", $this->join["tables"]) .")";
-            else
-                $join[] = $this->join["tables"];
+            if(is_array($this->join["tables"])) {
+                $formatted_table_names = array_map(fn (string $item) => "`$item`", $this->join["tables"]);
+                $join[] = "(" . implode(",", $formatted_table_names) . ")";
+            }
+            else {
+                $one_table_name = $this->join['tables'];
+                $join[] = "`$one_table_name`";
+            }
             $join[] = "ON";
             $join[] = $this->buildRelations();
             $join = implode(" ", $join);
