@@ -23,6 +23,11 @@ class Category extends Entity
         $this->display_name = $display_name;
     }
 
+    public static function getPropertyKeys(array $exclude = null): array
+    {
+        return self::_getPropertyKeys(new Category(), $exclude);
+    }
+
     /**
      * @return int
      */

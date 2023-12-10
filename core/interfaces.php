@@ -15,5 +15,5 @@ interface IEntity
      * Return property keys
      * @return string[]
      */
-    static function getPropertyKeys(object|string $object_or_class, ?array $exclude): array;
+    static function getPropertyKeys(?array $exclude): array;
 }
