@@ -122,7 +122,7 @@ class Router {
      * Get request method
      * @return string
      */
-    public static function getMethod(): string
+    public static function getRequestMethod(): string
     {
         return strtoupper($_SERVER["REQUEST_METHOD"]);
     }
@@ -216,12 +216,14 @@ class Router {
         if (isset($this->routes[$method]))
             foreach ($this->routes[$method] as $route => $callback) {
                 if (Router::matchUrl($path, $route, $params)) {
-                    call_user_func($callback, ...$params);
+                    $call_result = call_user_func($callback, ...$params);
+                    if(!empty($call_result)) echo $call_result;
                     return true;
                 }
             }
         // Not found page
-        call_user_func($this->getRoute('/404', 'get'));
+        $call_result = call_user_func($this->getRoute('/404', 'get'));
+        if(!empty($call_result)) echo $call_result;
         return false;
     }
 }
