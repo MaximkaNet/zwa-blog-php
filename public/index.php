@@ -1,35 +1,24 @@
 <?php
+require_once "../core/router.php";
+use app\core\router\Router;
+require_once "../core/app.php";
+use app\core\Application;
+require_once "../core/databaseConfig.php";
+use app\core\DatabaseConfiguration;
 
 require_once "config.php";
-require_once "../core/app.php";
-require_once "../core/router.php";
 
-use app\core\router\Router;
-use app\core\Application;
+$ROUTER = new Router(PREFIX);
+
+/* Configuration */
 
 Application::setWebsiteName(WEBSITE_NAME);
 Application::setHomeDir(HOME_DIR);
 
-$router = new Router(HOME_DIR);
-Application::setRouter($router);
+Application::setRouter($ROUTER);
 
-// Page routes
-include "../routes/public.php";
+$config = new DatabaseConfiguration(DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD);
+$tables = [CATEGORIES_TABLE, USERS_TABLE, POSTS_TABLE, COMMENTS_TABLE];
+Application::initDatabase($config, $tables);
 
-// Auth
-include "../routes/auth.php";
-
-// Admin
-include "../routes/admin.php";
-
-// Api routes
-//include "routes/api.php";
-
-// Not found page
-$router->notFound(function (){
-    include "../views/404.php";
-});
-
-// Match the request path
-$router->resolve(Router::getPath(), Router::getMethod());
-
+require_once "app.php";

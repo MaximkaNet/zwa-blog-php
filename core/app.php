@@ -3,12 +3,46 @@
 namespace app\core;
 
 use app\core\router\Router;
+use \PDO;
 
 class Application {
+    private static PDO $PDO;
     private static Router $router;
     private static string $page_name;
     private static string $website_name;
     private static string $home_dir = "/";
+
+    /**
+     * @param PDO $PDO
+     * @deprecated
+     */
+    public static function setPDO(PDO $PDO): void
+    {
+        self::$PDO = $PDO;
+    }
+
+    /**
+     * @return PDO
+     */
+    public static function getDatabaseConnection(): PDO
+    {
+        return self::$PDO;
+    }
+
+    /**
+     * Create a tables in database
+     * @param array $tables
+     * @param DatabaseConfiguration $config
+     * @return void
+     */
+    public static function initDatabase(DatabaseConfiguration $config, array $tables): void
+    {
+        self::$PDO = new PDO($config->toDsn("mysql"), $config->getUsername(), $config->getPassword());
+        $query = implode(" ", $tables);
+        $stmt = self::$PDO->prepare($query);
+        $stmt->execute();
+        $stmt->closeCursor();
+    }
 
     /**
      * Return the router object
@@ -16,7 +50,7 @@ class Application {
      */
     public static function getRouter(): Router
     {
-        return Application::$router;
+        return self::$router;
     }
 
     /**
@@ -25,7 +59,7 @@ class Application {
      */
     public static function setRouter(Router $router): void
     {
-        Application::$router = $router;
+        self::$router = $router;
     }
 
     /**
@@ -34,7 +68,7 @@ class Application {
      */
     public static function getWebsiteName(): string
     {
-        return Application::$website_name;
+        return self::$website_name;
     }
 
     /**
@@ -43,7 +77,7 @@ class Application {
      */
     public static function setWebsiteName(string $website_name): void
     {
-        Application::$website_name = $website_name;
+        self::$website_name = $website_name;
     }
 
     /**
@@ -52,7 +86,7 @@ class Application {
      */
     public static function getPageName(): string
     {
-        return Application::$page_name;
+        return self::$page_name;
     }
 
     /**
@@ -61,12 +95,12 @@ class Application {
      */
     public static function setPageName(string $page_name): void
     {
-        Application::$page_name = $page_name;
+        self::$page_name = $page_name;
     }
 
     public static function getPageTitle(string $separator = " - ", bool $with_website_name = true): string
     {
-        return Application::getPageName() . ($with_website_name ? $separator . Application::getWebsiteName() : "");
+        return self::getPageName() . ($with_website_name ? $separator . self::getWebsiteName() : "");
     }
 
     /**
