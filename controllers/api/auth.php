@@ -21,7 +21,7 @@ class AuthAPIController {
                     "message" => "User already logged in"
                 ]
             ]);
-            http_response_code(200);
+            http_response_code(400);
             return $response_body->toJSON();
         }
 
@@ -134,7 +134,7 @@ class AuthAPIController {
         }
         else {
             // Create the user ...
-            http_response_code(200);
+            http_response_code(201);
             $response_body->setMessage("User is created");
         }
         return $response_body->toJSON();
@@ -155,7 +155,7 @@ class AuthAPIController {
         }
         else {
             $response->setErrors([["message" => "User already logged out"]]);
-            http_response_code(200);
+            http_response_code(400);
         }
         return $response->toJSON();
     }
