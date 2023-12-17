@@ -5,4 +5,5 @@
     <link rel="icon" type="image/x-icon" href="<?php echo Application::linkFor("/assets/images/favicon.ico"); ?>">
     <title><?php echo Application::getPageTitle(); ?></title>
     <link rel="stylesheet" href="<?php echo Application::linkFor("/assets/css/style.css")?>">
+    <noscript>Available JavaScript to use this website</noscript>
 </head>

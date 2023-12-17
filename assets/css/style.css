@@ -1,6 +1,8 @@
-@import "navbar.css";
+@import "header.css";
 @import "post.css";
-@import "login.css";
+@import "auth/error.css";
+@import "auth/auth.css";
+@import "single.css";
 /*@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');*/
 /* Reset css*/
 * {
@@ -16,80 +18,44 @@
     --third-color: #EF745C;
 }
 
-/* Backgrounds */
-.bg-gradient {
-    background: linear-gradient(240deg, #EF745C 0%, #98414E 40%, #34073D 100%);
-}
-.bg-solid {
-    background: var(--primary-color);
+.main-body {
+    background-color: var(--primary-color);
 }
 
-/* Flexbox */
-
-.flex-container {
-    display: flex;
-}
-.flex-col {
-    flex-direction: column;
-}
-.flex-row {
-    flex-direction: row;
-}
-.flex-content-center {
-    justify-content: center;
-}
-.flex-content-between {
-    justify-content: space-between;
-}
-.flex-content-around {
-    justify-content: space-around;
-}
-.flex-container-start{
-    justify-content: flex-start;
-}
-.flex-container-end{
-    justify-content: flex-end;
-}
-.flex-items-center {
-    align-items: center;
-}
-.flex-items-start {
-    align-items: flex-start;
-}
-.flex-items-stretch{
-    align-items: stretch;
-}
-
-/* Indents */
-
-.mg-top-bottom-10 {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-.mg-left-right-10 {
-    margin-left: 10px;
-    margin-right: 10px;
-}
-.mg-center {
+.posts {
+    max-width: 1000px;
     margin-left: auto;
     margin-right: auto;
 }
 
 /* Buttons */
 
-.btn-login {
+.primary-btn {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--third-color);
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 16px;
     color: white;
+    cursor: pointer;
+}
+
+.secondary-btn {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
     border: 2px solid var(--third-color);
     border-radius: 10px;
     padding: 10px 25px;
     text-decoration: none;
-}
-.btn-signup {
+    font-size: 16px;
     color: white;
-    background-color: var(--third-color);
-    border-radius: 10px;
-    padding: 10px 25px;
-    text-decoration: none;
     cursor: pointer;
 }
 
@@ -100,11 +66,6 @@
 }
 .link-white:hover {
     color: var(--third-color);
-    text-decoration: underline;
-}
-.link-white:visited {
-    color: white;
-    text-decoration: none;
 }
 
 .link-orange {
@@ -113,53 +74,20 @@
     user-select: none;
 }
 .link-orange:hover {
-    text-decoration: underline;
+    color: #c9604d;
 }
-.link-orange:visited {
-    color: var(--third-color);
-    text-decoration: none;
-}
-
-/* Decorations */
-
-.underline {
-    text-decoration: underline;
-}
-
-.overflow-hidden {
-    overflow: hidden;
-}
-
-/* Sizes */
-
-.full-width {
-    width: 100vw;
-}
-
-.full-height {
-    height: 100vh;
-}
-
-.absolute {
-    position: absolute;
-}
-
-.relative{
-    position: relative;
-    top: 50px;
-}
-
-.max-w-800{
-    max-width: 800px;
-}
-
-
-
 
 /* ==================== */
 .logo {
     max-height: 30px;
-    margin-left: 0;
-    margin-right: auto;
     user-select: none;
+}
+
+/* ==================== */
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+.secondary-bg {
+    background-color: var(--secondary-color)
 }

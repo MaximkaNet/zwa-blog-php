@@ -1,0 +1,24 @@
+.auth-errors {
+    margin-right: auto;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    max-width: 350px;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.error-status-img {
+    max-width: 24px;
+}
+
+.error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px 35px;
+    box-shadow: 0 0 35px 0 #0000003F;
+    border-radius: 20px;
+    color: white;
+}
