@@ -1,3 +1,6 @@
+<?php
+http_response_code(404);
+?>
 <!doctype html>
 <html lang="en">
 <head>
