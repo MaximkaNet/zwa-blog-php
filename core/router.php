@@ -223,9 +223,9 @@ class Router {
     public function resolve (string $path, string $method): bool
     {
         if (isset($this->routes[$method]))
-            foreach ($this->routes[$method] as $route => ["callback" => $callback, "regexp" => $route_pattern]) {
-                if (Router::matchUrl($path, $route_pattern, $params)) {
-                    $call_result = call_user_func($callback, ...$params);
+            foreach ($this->routes[$method] as $route) {
+                if (Router::matchUrl($path, $route["regexp"], $params)) {
+                    $call_result = call_user_func($route["callback"], ...$params);
                     if(!empty($call_result)) echo $call_result;
                     return true;
                 }
