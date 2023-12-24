@@ -23,7 +23,7 @@ class Router {
      * Return base
      * @return string
      */
-    public function getPrefix(): string
+    public function getPrefix()
     {
         return $this->prefix;
     }
@@ -104,7 +104,21 @@ class Router {
     {
         $methods = explode("|", strtoupper($method));
         foreach ($methods as $_method){
-            $this->routes[$_method][Router::normalizePath($path, $this->prefix)] = $callback;
+            $normalized_route = Router::normalizePath($path, $this->prefix);
+            // Get params
+            preg_match_all("/:([^\/]+)/", $normalized_route, $param_keys);
+            $regexp_route = $normalized_route;
+            foreach ($param_keys[0] as $param) {
+                $optional = ($param[strlen($param) - 1] === "?");
+                $group = preg_replace("/[:?]+/", "", $param);
+                $replacement = $optional ? "\/?(?<$group>[^\/]+)?" : "\/(?<$group>[^\/]+)";
+                $pattern = $optional ? "/\/$param\?/" : "/\/$param/";
+                $regexp_route = preg_replace($pattern, $replacement, $regexp_route);
+            }
+            $this->routes[$_method][$regexp_route] = [
+                "callback" => $callback,
+                "original" => $normalized_route
+            ];
         }
     }
 
@@ -112,11 +126,15 @@ class Router {
      * Get the route
      * @param string $path
      * @param string $method
-     * @return mixed
+     * @return mixed|null
      */
     public function getRoute(string $path, string $method)
     {
-        return $this->routes[strtoupper($method)][Router::normalizePath($path, $this->prefix)];
+        foreach ($this->routes[strtoupper($method)] as $regexp_route => $route) {
+            if($route["original"] === $path)
+                return [$regexp_route => $route];
+        }
+        return null;
     }
     /**
      * Get request method
@@ -153,17 +171,7 @@ class Router {
         $normalized = implode('/', array_filter($parts, function ($part) {
             return $part != '';
         }));
-        return '/' . $normalized;
-    }
-
-    /**
-     * Return relative link like this: ./relative_link
-     * @param string $path
-     * @return string
-     */
-    public static function relativeLink(string $path): string
-    {
-        return '.' . Router::normalizePath($path);
+        return $parts[0] == ".." || $parts[0] == "." ? $normalized : ("/" . $normalized);
     }
 
     /**
@@ -171,8 +179,20 @@ class Router {
      * @param string $path
      * @param string $prefix
      * @return string
+     * @deprecated
      */
     public static function absoluteLink(string $path, string $prefix = ""): string
+    {
+        return Router::normalizePath($path, $prefix);
+    }
+
+    /**
+     * Create link
+     * @param string $path
+     * @param string $prefix
+     * @return string
+     */
+    public static function link(string $path, string $prefix = ""): string
     {
         return Router::normalizePath($path, $prefix);
     }
@@ -188,20 +208,20 @@ class Router {
     }
 
     /**
-     * Match url with route. If match is success, return match result
+     * Match url with route.
      * @param string $url
      * @param string $route
-     * @param string[] $matches
+     * @param array $params
      * @return false|int
      */
-    public static function matchUrl(string $url, string $route, &$matches)
+    public static function matchUrl(string $url, string $route, &$params)
     {
-        $selector_pattern = '/\/:([^\/]+)/'; // :example_param
-        $param_pattern = "/([^/*]+)";
-        $pattern = preg_replace($selector_pattern, $param_pattern, $route);
-        // Select a suitable route
-        $match_result = preg_match("#^" . $pattern ."$#", $url, $matches);
-        array_shift($matches); // remove the first item
+        // Check if the route matches the url
+        $match_result = preg_match("#^" . $route ."$#", $url, $matches);
+        // Get params
+        $params = array_filter($matches, function ($key) {
+            return is_string($key);
+        }, ARRAY_FILTER_USE_KEY);
         return $match_result;
     }
 
