@@ -107,9 +107,9 @@ class Router {
             $normalized_route = Router::normalizePath($path, $this->prefix);
             // Get params
             $regexp_route = $normalized_route;
-            // Replace regular
-            $regexp_route = preg_replace("/\/:([^\/]+)\?/", "/?([^\/]+)?", $regexp_route);
             // Replace optional
+            $regexp_route = preg_replace("/\/:([^\/]+)\?/", "/?([^\/]+)?", $regexp_route);
+            // Replace regular
             $regexp_route = preg_replace("/\/:([^\/]+)/", "/([^\/]+)", $regexp_route);
             $this->routes[$_method][$normalized_route] = [
                 "callback" => $callback,
