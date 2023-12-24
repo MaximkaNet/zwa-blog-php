@@ -106,18 +106,14 @@ class Router {
         foreach ($methods as $_method){
             $normalized_route = Router::normalizePath($path, $this->prefix);
             // Get params
-            preg_match_all("/:([^\/]+)/", $normalized_route, $param_keys);
             $regexp_route = $normalized_route;
-            foreach ($param_keys[0] as $param) {
-                $optional = ($param[strlen($param) - 1] === "?");
-                $group = preg_replace("/[:?]+/", "", $param);
-                $replacement = $optional ? "\/?(?<$group>[^\/]+)?" : "\/(?<$group>[^\/]+)";
-                $pattern = $optional ? "/\/$param\?/" : "/\/$param/";
-                $regexp_route = preg_replace($pattern, $replacement, $regexp_route);
-            }
-            $this->routes[$_method][$regexp_route] = [
+            // Replace regular
+            $regexp_route = preg_replace("/\/:([^\/]+)\?/", "/?([^\/]+)?", $regexp_route);
+            // Replace optional
+            $regexp_route = preg_replace("/\/:([^\/]+)/", "/([^\/]+)", $regexp_route);
+            $this->routes[$_method][$normalized_route] = [
                 "callback" => $callback,
-                "original" => $normalized_route
+                "regexp" => $regexp_route
             ];
         }
     }
@@ -130,11 +126,7 @@ class Router {
      */
     public function getRoute(string $path, string $method)
     {
-        foreach ($this->routes[strtoupper($method)] as $regexp_route => $route) {
-            if($route["original"] === $path)
-                return [$regexp_route => $route];
-        }
-        return null;
+        return $this->routes[strtoupper($method)][Router::normalizePath($path, $this->prefix)];
     }
     /**
      * Get request method
@@ -217,11 +209,8 @@ class Router {
     public static function matchUrl(string $url, string $route, &$params)
     {
         // Check if the route matches the url
-        $match_result = preg_match("#^" . $route ."$#", $url, $matches);
-        // Get params
-        $params = array_filter($matches, function ($key) {
-            return is_string($key);
-        }, ARRAY_FILTER_USE_KEY);
+        $match_result = preg_match("#^" . $route ."$#", $url, $params);
+        array_shift($params);
         return $match_result;
     }
 
@@ -234,15 +223,15 @@ class Router {
     public function resolve (string $path, string $method): bool
     {
         if (isset($this->routes[$method]))
-            foreach ($this->routes[$method] as $route => $callback) {
-                if (Router::matchUrl($path, $route, $params)) {
+            foreach ($this->routes[$method] as $route => ["callback" => $callback, "regexp" => $route_pattern]) {
+                if (Router::matchUrl($path, $route_pattern, $params)) {
                     $call_result = call_user_func($callback, ...$params);
                     if(!empty($call_result)) echo $call_result;
                     return true;
                 }
             }
         // Not found page
-        $call_result = call_user_func($this->getRoute('/404', 'get'));
+        $call_result = call_user_func($this->getRoute('/404', 'get')["callback"]);
         if(!empty($call_result)) echo $call_result;
         return false;
     }
