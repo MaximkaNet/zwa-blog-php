@@ -3,10 +3,11 @@
 use app\core\Application;
 use app\core\router\Router;
 
+$router = Application::getRouter();
 ?>
 
 <form class="auth-form center secondary-bg" method="post" id="logout_form">
-    <img class="logo" src="<?php echo Application::linkFor("/assets/images/logo.svg"); ?>" alt="logo">
+    <img class="logo" src="<?= Router::link("/assets/images/logo.svg", $router->getPrefix()); ?>" alt="logo">
     <p class="auth-info">Do you really want to log out?</p>
     <div class="auth-form-section">
         <button
@@ -16,7 +17,7 @@ use app\core\router\Router;
         <a
             type="submit"
             class="primary-btn"
-            href="<?php echo Router::absoluteLink("/", Application::getRouter()->getPrefix()); ?>"
+            href="<?= Router::link("/", $router->getPrefix()); ?>"
         >No</a>
     </div>
 </form>

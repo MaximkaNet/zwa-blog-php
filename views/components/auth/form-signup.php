@@ -1,10 +1,12 @@
 <?php
 use app\core\Application;
 use app\core\router\Router;
+
+$router = Application::getRouter();
 ?>
 
 <form class="auth-form center" method="post" id="signup_form">
-    <img class="logo" src="<?php echo Application::linkFor("/assets/images/logo.svg"); ?>" alt="logo">
+    <img class="logo" src="<?= Router::link("/assets/images/logo.svg", $router->getPrefix()); ?>" alt="logo">
     <fieldset>
         <div class="auth-form-section column-group">
             <span class="input-title">First name*</span>
@@ -68,6 +70,10 @@ use app\core\router\Router;
     </fieldset>
     <div class="auth-form-section">
         <button class="primary-btn">Confirm</button>
-        <span class="extra-action"><a href="<?php echo Router::absoluteLink("/login", Application::getRouter()->getPrefix())?>" class="link-orange">Login</a>&nbsp;if you have account</span>
+        <span class="extra-action">
+            <a
+                href="<?= Router::link("/login", $router->getPrefix())?>"
+                class="link-orange"
+            >Login</a>&nbsp;if you have account</span>
     </div>
 </form>

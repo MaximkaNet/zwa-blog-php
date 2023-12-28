@@ -1,10 +1,16 @@
+<?php
+use app\core\Application;
+use app\core\router\Router;
+?>
+
 <!doctype html>
 <html lang="en">
-<?php require_once "../views/components/common/head.php"; ?>
+<?php require_once "components/common/head.php"; ?>
 <body class="signup-body auth-padding">
-<!-- Content will insert by javascript function 'login' --->
 <ul class="auth-errors"></ul>
 <?php require_once "components/auth/form-signup.php"; ?>
-<?php require_once "components/common/scripts.php"; ?>
+<script src="<?= Router::link(
+        "assets/js/auth.js",
+        Application::getRouter()->getPrefix()); ?>" type="module"></script>
 </body>
 </html>
