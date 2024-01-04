@@ -1,10 +1,11 @@
 <?php
 
 use app\core\Application;
-require_once '../controllers/auth.php';
 use app\controllers\AuthController;
-require_once '../controllers/api/auth.php';
 use app\controllers\AuthAPIController;
+
+require_once $_SERVER["DOCUMENT_ROOT"] . "/controllers/api/auth.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/controllers/auth.php";
 
 $router = Application::getRouter();
 
@@ -14,6 +15,6 @@ $router->get('/signup', [AuthController::class, 'signup']);
 $router->get('/logout', [AuthController::class, 'logout']);
 
 // Auth api
-$router->post('/login', [AuthAPIController::class, 'login']);
-$router->post('/signup',  [AuthAPIController::class, 'signup']);
-$router->post('/logout', [AuthAPIController::class, 'logout']);
+$router->post('/api/v1/login', [AuthAPIController::class, 'login']);
+$router->post('/api/v1/signup',  [AuthAPIController::class, 'signup']);
+$router->post('/api/v1/logout', [AuthAPIController::class, 'logout']);

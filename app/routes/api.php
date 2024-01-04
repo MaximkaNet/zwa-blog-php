@@ -1,8 +1,8 @@
 <?php
 
-require_once "domain/users/controller.php";
-require_once "domain/posts/controller.php";
-require_once "domain/comments/controller.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/users/controller.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/posts/controller.php";
+require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/comments/controller.php";
 
 use app\core\Application;
 use app\controllers\users\UserController;
@@ -21,9 +21,9 @@ $router->post('/api/comment/create', [CommentController::class, 'create']);
 $router->post('/api/comments/:comment_id', [CommentController::class, 'edit']);
 // Remove comment
 $router->get('/api/comments/:comment_id', [CommentController::class, 'delete']);
-// Change user avatar
+// Change users avatar
 $router->post('/api/users/:user_id/avatar', [UserController::class, 'changeAvatar']);
-// Change user info
+// Change users info
 $router->post('/api/users/:user_id/edit', [UserController::class, 'changeInfo']);
-// Delete user
+// Delete users
 $router->get('/api/users/:user_id/delete', [UserController::class, 'delete']);

@@ -13,7 +13,7 @@ class AuthController
      */
     public static function login(): void
     {
-        Application::setPageName('Login');
+        Application::getWebsiteSettings()->setPage('Login');
         require_once "../views/login.php";
     }
 
@@ -23,7 +23,7 @@ class AuthController
      */
     public static function signup(): void
     {
-        Application::setPageName('Signup');
+        Application::getWebsiteSettings()->setPage('Signup');
         require_once "../views/signup.php";
     }
 
@@ -34,11 +34,11 @@ class AuthController
     public static function logout(): void
     {
         if(empty($_SESSION["user"])) {
-            $to_login = Router::absoluteLink("/login", Application::getRouter()->getPrefix());
+            $to_login = Router::link("/login", Application::getRouter()->getPrefix());
             header("Location: $to_login", true, 301);
         }
         else {
-            Application::setPageName('Logout');
+            Application::getWebsiteSettings()->setPage('Logout');
             require_once "../views/logout.php";
         }
     }

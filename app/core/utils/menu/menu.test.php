@@ -5,7 +5,8 @@ namespace app\core\components;
 require_once "../libs/test/test.php";
 require_once "menu.php";
 
-use app\core\utils\Test;
+use app\app\core\libs\test\Test;
+use app\app\core\ui\Menu;
 
 $test_handler = new Test();
 $test_handler->addTest("Creating menu", function () {

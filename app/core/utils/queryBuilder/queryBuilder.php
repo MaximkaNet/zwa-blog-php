@@ -26,18 +26,8 @@ class QueryBuilder
 
     private ?int $method;
     private ?string $table_name;
-    /**
-     * @deprecated
-     * @var array|null
-     */
-    private ?array $body = null;
     private ?array $columns = null;
     private ?array $values = null;
-    /**
-     * @deprecated
-     * @var array|null
-     */
-    private ?array $to_update = null;
     private ?array $where = null;
     private ?array $join = null;
     private int $offset = 0;
@@ -165,9 +155,8 @@ class QueryBuilder
     }
 
     /**
-     * Build utils
+     * Build query
      * @return string
-     * @throws QueryBuilderException
      */
     public function build(): string
     {
@@ -175,13 +164,12 @@ class QueryBuilder
             QueryBuilder::QUERY_SELECT => $this->buildSelectQuery(),
             QueryBuilder::QUERY_INSERT => $this->buildInsertQuery(),
             QueryBuilder::QUERY_UPDATE => $this->buildUpdateQuery(),
-            QueryBuilder::QUERY_DELETE => $this->buildDeleteQuery(),
-            default => throw QueryBuilderException::InvalidMethod(),
+            QueryBuilder::QUERY_DELETE => $this->buildDeleteQuery()
         };
     }
 
     /**
-     * Build select utils for statement
+     * Build select query for statement
      * @return string
      */
     private function buildSelectQuery(): string
@@ -207,7 +195,7 @@ class QueryBuilder
     }
 
     /**
-     * Build insert utils for statement
+     * Build insert query for statement
      * @throws QueryBuilderException
      * @return string
      */
@@ -223,7 +211,7 @@ class QueryBuilder
     }
 
     /**
-     * Build delete utils for statement
+     * Build delete query for statement
      * @return string
      */
     private function buildDeleteQuery(): string
@@ -239,7 +227,7 @@ class QueryBuilder
     }
 
     /**
-     * Build update utils for statement
+     * Build update query for statement
      * @throws QueryBuilderException
      * @return string
      */
@@ -409,7 +397,6 @@ class QueryBuilder
             self::QUERY_SELECT, self::QUERY_DELETE => $this->_prepareValuesToBind($this->where),
             self::QUERY_INSERT => $this->_prepareValuesToBind($this->values),
             self::QUERY_UPDATE => $this->_prepareValuesToBind([...$this->values, ...$this->where]),
-            default => throw QueryBuilderException::InvalidMethod(),
         };
     }
 
@@ -417,7 +404,7 @@ class QueryBuilder
      * Bind values to statement
      * @param array|null $values
      * @return array|null
-     * @throws QueryBuilderException
+     * @throws QueryBuilderException Throws if $value type is unsupported
      */
     private function _prepareValuesToBind(?array $values): ?array
     {
