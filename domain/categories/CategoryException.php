@@ -1,6 +1,6 @@
 <?php
-namespace app\domain\categories;
-require_once "../../core/exception.php";
+namespace domain\categories;
+
 use app\core\exception\ApplicationException;
 
 class CategoryException extends ApplicationException

@@ -1,83 +1,45 @@
 <?php
 
-namespace app\domain\categories;
+namespace domain\categories;
 
-require_once "../../core/entity.php";
-use app\core\entity\Entity;
-
-require_once "categoryException.php";
-
-class Category extends Entity
+class Category implements ICategory
 {
-    protected ?int $id;
-    protected ?string $name;
-    protected ?string $display_name;
+    private int $id;
+    private string $name;
+    private string $display_name;
 
-    public function __construct(
-        int $id = null,
-        string $name = null,
-        string $display_name = null)
+    public function __construct()
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->display_name = $display_name;
     }
 
-    public static function getPropertyKeys(array $exclude = null): array
+    public function getId(): ?int
     {
-        return self::_getPropertyKeys(new Category(), $exclude);
+        return $this->id ?? null;
     }
 
-    /**
-     * @return int
-     */
-    public function getId(): int
+    public function getName(): ?string
     {
-        return $this->id;
+        return $this->name ?? null;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
+    public function getDisplayName(): ?string
     {
-        $this->id = $id;
+        return $this->display_name ?? null;
     }
 
-    /**
-     * @return string
-     */
-    public function getName(): string
+    public function setDisplayName(string $new_display_name): void
     {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDisplayName(): string
-    {
-        return $this->display_name;
-    }
-
-    /**
-     * Name will be set in correct format - <i>new-category</i>
-     * @param string $new_name
-     * @throws CategoryException
-     */
-    public function setName(string $new_name): void
-    {
-        $new_name = strtolower($new_name);
-        if(preg_match("/\s/", $new_name))
-            throw CategoryException::IncorrectFormat();
-        $this->name = $new_name;
-    }
-
-    /**
-     * @param string $new_display_name
-     */
-    public function changeDisplayName(string $new_display_name): void
-    {
+        if (strlen($new_display_name) > 15) {
+            throw new CategoryException("Exceeds the number of characters in display name");
+        }
         $this->display_name = $new_display_name;
+    }
+
+    public static function isValidName(string $name): bool
+    {
+        $available_chars_pattern = "/[^0-9a-zA-Z-_]/";
+        // Category name validation
+        // Available chars are '_', '-' and all letters and numbers
+        return preg_match($available_chars_pattern, $name);
     }
 }
