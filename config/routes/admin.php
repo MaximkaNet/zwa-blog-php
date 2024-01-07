@@ -1,11 +1,5 @@
 <?php
 
-require_once '../controllers/admin.php';
-
-use app\core\Application;
-use app\controllers\AdminController;
-
-$router = Application::getRouter();
 
 // Admin routes
 $router->get('/admin', [AdminController::class, 'dashboard']);

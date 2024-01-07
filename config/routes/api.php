@@ -1,16 +1,5 @@
 <?php
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/users/controller.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/posts/controller.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/comments/controller.php";
-
-use app\core\Application;
-use app\controllers\users\UserController;
-use app\controllers\posts\PostController;
-use app\controllers\comments\CommentController;
-
-$router = Application::getRouter();
-
 // Like set/unset
 $router->post('/api/posts/:post_id/like', [PostController::class, 'toggleLike']);
 // Save set/unset

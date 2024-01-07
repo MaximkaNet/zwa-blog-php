@@ -1,11 +1,9 @@
 <?php
-/**
- * PHP version 7.2
- */
-namespace app\core\router;
+namespace app\core;
 class Router {
-    private $routes = [];
-    private $prefix;
+    private array $routes = [];
+    private string $prefix;
+
     /**
      * Prefix in url
      * @example http://domain.com/prefix/single_page - single page
@@ -14,8 +12,11 @@ class Router {
      */
     function __construct(string $prefix = "") {
         $this->prefix = $prefix;
-        $this->setRoute('/404', 'get', function (){
-            echo 'Page not found';
+        $this->setRoute('/404', 'get', function () {
+            return [
+                "template" => "404",
+                "page_title" => "Page not found"
+            ];
         });
     }
 
@@ -23,7 +24,7 @@ class Router {
      * Return base
      * @return string
      */
-    public function getPrefix()
+    public function getPrefix(): string
     {
         return $this->prefix;
     }
@@ -34,7 +35,7 @@ class Router {
      * @param callable $callback
      * @return void
      */
-    public function get(string $path, callable $callback)
+    public function get(string $path, callable $callback): void
     {
         $this->setRoute($path,"get", $callback);
     }
@@ -45,7 +46,7 @@ class Router {
      * @param callable $callback
      * @return void
      */
-    public function post(string $path, callable $callback)
+    public function post(string $path, callable $callback): void
     {
         $this->setRoute($path,"post", $callback);
     }
@@ -56,7 +57,7 @@ class Router {
      * @param callable $callback
      * @return void
      */
-    public function put(string $path, callable $callback)
+    public function put(string $path, callable $callback): void
     {
         $this->setRoute($path,"put", $callback);
     }
@@ -67,7 +68,7 @@ class Router {
      * @param callable $callback
      * @return void
      */
-    public function patch(string $path, callable $callback)
+    public function patch(string $path, callable $callback): void
     {
         $this->setRoute($path,"patch", $callback);
     }
@@ -78,7 +79,7 @@ class Router {
      * @param callable $callback
      * @return void
      */
-    public function delete(string $path, callable $callback)
+    public function delete(string $path, callable $callback): void
     {
         $this->setRoute($path,"delete", $callback);
     }
@@ -88,7 +89,7 @@ class Router {
      * @param callable $callback
      * @return void
      */
-    public function notFound(callable $callback)
+    public function notFound(callable $callback): void
     {
         $this->setRoute('/404', 'get', $callback);
     }
@@ -100,7 +101,7 @@ class Router {
      * @param callable $callback
      * @return void
      */
-    public function setRoute(string $path, string $method, callable $callback)
+    public function setRoute(string $path, string $method, callable $callback): void
     {
         $methods = explode("|", strtoupper($method));
         foreach ($methods as $_method){
@@ -124,27 +125,9 @@ class Router {
      * @param string $method
      * @return mixed|null
      */
-    public function getRoute(string $path, string $method)
+    public function getRoute(string $path, string $method): mixed
     {
         return $this->routes[strtoupper($method)][Router::normalizePath($path, $this->prefix)];
-    }
-    /**
-     * Get request method
-     * @return string
-     */
-    public static function getRequestMethod(): string
-    {
-        return strtoupper($_SERVER["REQUEST_METHOD"]);
-    }
-
-    /**
-     * Get uri without query string
-     * @return string
-     */
-    public static function getPath(): string
-    {
-        $path = explode("?", $_SERVER["REQUEST_URI"])[0];
-        return Router::normalizePath($path);
     }
 
     /**
@@ -167,18 +150,6 @@ class Router {
     }
 
     /**
-     * Return absolute link like this: /absolute_link
-     * @param string $path
-     * @param string $prefix
-     * @return string
-     * @deprecated
-     */
-    public static function absoluteLink(string $path, string $prefix = ""): string
-    {
-        return Router::normalizePath($path, $prefix);
-    }
-
-    /**
      * Create link
      * @param string $path
      * @param string $prefix
@@ -190,23 +161,13 @@ class Router {
     }
 
     /**
-     * Get query param
-     * @param string $key
-     * @return string
-     */
-    public static function getQueryParam(string $key): string
-    {
-        return $_GET[$key];
-    }
-
-    /**
      * Match url with route.
      * @param string $url
      * @param string $route
      * @param array $params
      * @return false|int
      */
-    public static function matchUrl(string $url, string $route, &$params)
+    public static function matchUrl(string $url, string $route, &$params): int|false
     {
         // Check if the route matches the url
         $match_result = preg_match("#^" . $route ."$#", $url, $params);
@@ -218,21 +179,23 @@ class Router {
      * Match request url with routes and call callback
      * @param string $path
      * @param string $method
-     * @return mixed
+     * @return View
      */
-    public function resolve (string $path, string $method): bool
+    public function resolve (string $path, string $method): View
     {
         if (isset($this->routes[$method]))
             foreach ($this->routes[$method] as $route) {
                 if (Router::matchUrl($path, $route["regexp"], $params)) {
-                    $call_result = call_user_func($route["callback"], ...$params);
-                    if(!empty($call_result)) echo $call_result;
-                    return true;
+                    $props = call_user_func($route["callback"], ...$params);
+                    $view = new View($props["template"]);
+                    $view->setContext($props["context"] ?? []);
+                    return $view;
                 }
             }
         // Not found page
-        $call_result = call_user_func($this->getRoute('/404', 'get')["callback"]);
-        if(!empty($call_result)) echo $call_result;
-        return false;
+        $props = call_user_func($this->getRoute('/404', 'get')["callback"]);
+        $view = new View("404");
+        $view->setContext($props["context"] ?? []);
+        return $view;
     }
 }

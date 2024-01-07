@@ -1,6 +1,6 @@
 <?php
-use app\core\Application;
-use app\core\router\Router;
+use app\app\core\Application;
+use app\app\core\Router;
 $settings = Application::getWebsiteSettings();
 $router = Application::getRouter();
 ?>
@@ -10,5 +10,5 @@ $router = Application::getRouter();
     <link rel="icon" type="image/x-icon" href="<?= Router::link("/assets/images/favicon.ico", $router->getPrefix()) ?>">
     <title><?= $settings->getTitle(); ?></title>
     <link rel="stylesheet" href="<?= Router::link("/assets/css/style.css", $router->getPrefix())?>">
-    <noscript>Available JavaScript to use this website</noscript>
+    <noscript></noscript>
 </head>

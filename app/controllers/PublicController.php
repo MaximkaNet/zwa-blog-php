@@ -4,15 +4,12 @@ namespace app\controllers;
 
 use app\core\Application;
 use app\core\exception\ApplicationException;
-use app\core\router\Router;
-use app\domain\categories\Category;
-use app\domain\exception\UserException;
-use app\domain\posts\Post;
-use app\domain\users\User;
+use app\core\Router;
+use domain\categories\Category;
+use domain\exception\UserException;
+use domain\posts\Post;
+use domain\users\User;
 use app\domain\users\UserService;
-
-require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/posts/post.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/users/userService.php";
 
 class PublicController
 {
