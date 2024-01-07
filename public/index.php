@@ -1,6 +1,6 @@
 <?php
 require_once "../vendor/autoloader.php";
-require_once "../vendor/mustache/mustache/src/Mustache/Autoloader.php";
+require_once "../vendor/mustache/src/Mustache/Autoloader.php";
 
 Mustache_Autoloader::register();
 

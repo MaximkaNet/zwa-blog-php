@@ -2,8 +2,8 @@
 
 namespace app\controllers;
 
-use app\core\Application;
-use app\core\router\Router;
+use app\app\core\Application;
+use app\app\core\Router;
 
 class AuthController
 {
@@ -14,7 +14,7 @@ class AuthController
     public static function login(): void
     {
         Application::getWebsiteSettings()->setPage('Login');
-        require_once "../views/login.php";
+        require_once "../views/login.mustache";
     }
 
     /**
@@ -24,7 +24,7 @@ class AuthController
     public static function signup(): void
     {
         Application::getWebsiteSettings()->setPage('Signup');
-        require_once "../views/signup.php";
+        require_once "../views/signup.mustache";
     }
 
     /**
@@ -39,7 +39,7 @@ class AuthController
         }
         else {
             Application::getWebsiteSettings()->setPage('Logout');
-            require_once "../views/logout.php";
+            require_once "../views/logout.mustache";
         }
     }
 }

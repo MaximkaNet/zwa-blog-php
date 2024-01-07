@@ -1,8 +1,0 @@
-{
-  "require": {
-    "mustache/mustache": "~2.5"
-  },
-  "autoload": {
-    "psr-4": {"Acme\\": "src/"}
-  }
-}

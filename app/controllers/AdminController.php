@@ -1,8 +1,8 @@
 <?php
 
 namespace app\controllers;
-use app\core\Application;
-use app\core\router\Router;
+use app\app\core\Application;
+use app\app\core\Router;
 
 class AdminController {
     public static function dashboard(): void
