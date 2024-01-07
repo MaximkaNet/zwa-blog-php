@@ -1,14 +1,13 @@
-<?php
-use app\app\core\Application;
-use app\app\core\Router;
-$settings = Application::getWebsiteSettings();
-$router = Application::getRouter();
-?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="<?= Router::link("/assets/images/favicon.ico", $router->getPrefix()) ?>">
-    <title><?= $settings->getTitle(); ?></title>
-    <link rel="stylesheet" href="<?= Router::link("/assets/css/style.css", $router->getPrefix())?>">
-    <noscript></noscript>
+    <link rel="icon" type="image/x-icon" href="{{favicon_link}}">
+    <title>{{page_title}}</title>
+    {{#stylesheets}}
+        <link rel="stylesheet" href="{{link}}">
+    {{/stylesheets}}
+    {{#scripts}}
+        <script src="{{src}}"></script>
+    {{/scripts}}
+    <noscript>Available javascript to use this application</noscript>
 </head>

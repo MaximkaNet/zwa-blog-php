@@ -1,29 +1,24 @@
-<?php
-use app\app\core\Application;
-use app\app\core\Router;
-
-$router = Application::getRouter();
-?>
 <header class="layout-header">
     <a
         class="logo-container"
-        href="<?= Router::link("/", $router->getPrefix())?>"
+        href="{{header.link_to_website}}"
     >
         <img
             class="logo"
-            src="<?= Router::link("/assets/images/logo.svg", $router->getPrefix())?>"
+            src="{{header.logo}}"
             alt="Logo image"
         >
     </a>
-    <?php require_once "nav.php"; ?>
-    <?php if(isset($_SESSION["user"])): ?>
-    <div class="header-account">
-        <a href="<?= Router::link("/admin", $router->getPrefix()); ?>" class="link-white">Account</a>
-    </div>
-    <?php else: ?>
-    <div class="header-account">
-        <a href="<?= Router::link("/signup", $router->getPrefix()); ?>" class="primary-btn">Sign up</a>
-        <a href="<?= Router::link("/login", $router->getPrefix());  ?>" class="secondary-btn">Login</a>
-    </div>
-    <?php endif; ?>
+    {{> components/common/nav}}
+    {{# authorized }}
+        <div class="header-account">
+            <a href="/admin" class="link-white">Account</a>
+        </div>
+    {{/authorized}}
+    {{^authorized}}
+        <div class="header-account">
+            <a href="/signup" class="primary-btn">Sign up</a>
+            <a href="/login" class="secondary-btn">Login</a>
+        </div>
+    {{/authorized}}
 </header>

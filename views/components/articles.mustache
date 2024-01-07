@@ -1,0 +1,64 @@
+<div class="posts">
+    {{#articles}}
+        <article class="post" id="post-{{post.id}}">
+            <section class="post-header">
+                <a href="{{user.link}}">
+                    <img
+                        src="{{user.avatar_link}}"
+                        alt="User icon"
+                        class="user-avatar"
+                    >
+                </a>
+                <div>
+                    <a href="{{user.link}}" class="link-white">{{user.full_name}}</a>
+                    <span class="post-date">{{post.date}}</span>
+                </div>
+            </section>
+            <section class="post-body">
+                <h1 class="post-title">
+                    <a
+                        href="{{post.url}}"
+                        class="link-white"
+                    >
+                        {{post.title}}
+                    </a>
+                </h1>
+                <div class="post-short-content">
+                    {{post.content}}
+                    <a href="{{post.url}}" class="link-orange">Read more...</a>
+                </div>
+            </section>
+            <section class="post-footer">
+                <div
+                    class="post-footer-option"
+                    data-post-id="{{post.id}}"
+                    data-action="like"
+                >
+                    <img
+                        class="option-img"
+                        src=""
+                        alt="like"
+                    >
+                    <span>{{post.rating}}</span>
+                </div>
+                <div
+                    class="post-footer-option"
+                    data-post-id="{{post.id}}"
+                    data-action="save"
+                >
+                    <img
+                        class="option-img"
+                        src=""
+                        alt="save"
+                    >
+                    <span>{{post.count_saved}}</span>
+                </div>
+            </section>
+        </article>
+    {{/articles}}
+    {{^articles}}
+        <div class="post post-not-found">
+            Posts not found
+        </div>
+    {{/articles}}
+</div>
