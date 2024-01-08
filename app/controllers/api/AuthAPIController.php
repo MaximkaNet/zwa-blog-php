@@ -1,14 +1,9 @@
 <?php
 
-namespace app\controllers;
+namespace app\controllers\api;
 
-require_once $_SERVER["DOCUMENT_ROOT"] . "/core/http/response.php";
-require_once $_SERVER["DOCUMENT_ROOT"] . "/domain/users/userService.php";
-
-use app\core\Application;
 use app\core\exception\ApplicationException;
-use app\core\http\ResponseBody;
-use app\domain\users\UserService;
+use app\core\http\Response;
 
 class AuthAPIController {
     /**
@@ -17,7 +12,7 @@ class AuthAPIController {
      */
     public static function login(): ?string
     {
-        $response_body = new ResponseBody();
+        $response_body = new Response();
         header("Content-Type: application/json");
         if (isset($_SESSION["user"])) {
             $response_body->setErrors([
@@ -44,17 +39,33 @@ class AuthAPIController {
             return $response_body->toJSON();
         }
 
-        $service = new UserService();
+//        $service = new UserService();
+        $login = function ($email, $password){
+            if($email === "mail@mail.com" and password_verify($password, password_hash("123", PASSWORD_DEFAULT))){
+                return [
+                    "email" => "mail@mail.com",
+                    "id" => 1,
+                    "role" => "user"
+                ];
+            }
+            throw new ApplicationException("Bad request", 400);
+        };
         // Process login
         $email = htmlspecialchars($_POST["email"]);
         $password = htmlspecialchars($_POST["password"]);
 
         try {
-            $user = $service->login($email, $password);
+//            $user = $service->login($email, $password);
+            $user = $login($email, $password);
             $_SESSION["user"]["is_auth"] = true;
-            $_SESSION["user"]["email"] = $user->getEmail();
-            $_SESSION["user"]["id"] = $user->getId();
-            $_SESSION["user"]["role"] = $user->getRole();
+            // ...
+            $_SESSION["user"]["email"] = $user["email"];
+            $_SESSION["user"]["id"] = $user["id"];
+            $_SESSION["user"]["role"] = $user["role"];
+            // ...
+//            $_SESSION["user"]["email"] = $user->getEmail();
+//            $_SESSION["user"]["id"] = $user->getId();
+//            $_SESSION["user"]["role"] = $user->getRole();
             http_response_code(200);
             $response_body->setMessage("Login success");
         } catch (ApplicationException $exception) {
@@ -75,7 +86,7 @@ class AuthAPIController {
      */
     public static function signup(): ?string
     {
-        $response_body = new ResponseBody();
+        $response_body = new Response();
         header("Content-Type: application/json");
 
         // Validation input fields
@@ -122,7 +133,7 @@ class AuthAPIController {
      */
     public static function logout(): ?string
     {
-        $response = new ResponseBody();
+        $response = new Response();
         header("Content-Type: application/json");
         if(isset($_SESSION["user"])){
             session_unset();
