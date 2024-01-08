@@ -2,8 +2,6 @@
 
 namespace app\core\utils\queryBuilder;
 
-require_once "queryBuilderException.php";
-
 use PDO;
 
 class QueryBuilder
@@ -26,12 +24,12 @@ class QueryBuilder
 
     private ?int $method;
     private ?string $table_name;
-    private ?array $columns = null;
+    private array|string|null $columns = null;
     private ?array $values = null;
     private ?array $where = null;
+    private ?array $params = null;
     private ?array $join = null;
-    private int $offset = 0;
-    private ?int $limit = null;
+    private ?array $limit = null;
     private string $param_format = ":%s_%s";
 
     /**
@@ -46,11 +44,58 @@ class QueryBuilder
     }
 
     /**
+     * Create columns provider
+     * @return ColumnsProvider
+     */
+    public static function createColumnsProvider(): ColumnsProvider
+    {
+        return new ColumnsProvider();
+    }
+
+    /**
+     * Parse query result before using ColumnsProvider. Function returns array in format:
+     * ```
+     *  $parsed_result = [
+     *      "entity_or_table_name" => [
+     *          "property_1" => "value_1",
+     *          "property_2" => "value_2",
+     *          // ...
+     *      ],
+     *      "entity_or_table_name_2" => [
+     *          "property_1" => "value_1",
+     *          "property_2" => "value_2",
+     *          // ...
+     *      ]
+     *      // ...
+     *  ];
+     * ```
+     * @param array|false $subject
+     * @param bool $stack
+     * @return array
+     */
+    public static function parseQueryResult(array|false $subject, bool $stack = false): array
+    {
+        if (!$subject) {
+            return [];
+        }
+        $result = [];
+        if ($stack) {
+            foreach ($subject as $row) {
+                $result[] = ColumnsProvider::parse($row);
+            }
+        } else {
+            $result = ColumnsProvider::parse($subject);
+        }
+        return $result;
+    }
+
+    /**
      * Select statement
-     * @param array|null $columns
+     * @param array|string|null $columns
      * @return $this
      */
-    public function select(array $columns = null): self {
+    public function select(array|string $columns = null): self
+    {
         $this->method = self::QUERY_SELECT;
         $this->columns = $columns;
         return $this;
@@ -62,13 +107,14 @@ class QueryBuilder
      * @param array $values
      * @return $this
      */
-    public function insertInto(string $table_name, array $values): self {
+    public function insertInto(string $table_name, array $values): self
+    {
         $this->method = self::QUERY_INSERT;
         $this->table_name = $table_name;
         // Split as columns and values
         $this->columns = [];
         $this->values = $values;
-        foreach ($values as $key => $value){
+        foreach ($values as $key => $value) {
             $this->columns[] = $key;
         }
         return $this;
@@ -80,13 +126,14 @@ class QueryBuilder
      * @param array $values
      * @return $this
      */
-    public function update(string $table_name, array $values): self {
+    public function update(string $table_name, array $values): self
+    {
         $this->method = self::QUERY_UPDATE;
         $this->table_name = $table_name;
         // Split as columns and values
         $this->columns = [];
         $this->values = $values;
-        foreach ($values as $key => $value){
+        foreach ($values as $key => $value) {
             $this->columns[] = $key;
         }
         return $this;
@@ -97,7 +144,8 @@ class QueryBuilder
      * @param string $table_name
      * @return $this
      */
-    public function deleteFrom(string $table_name): self {
+    public function deleteFrom(string $table_name): self
+    {
         $this->method = self::QUERY_DELETE;
         $this->table_name = $table_name;
         return $this;
@@ -108,19 +156,23 @@ class QueryBuilder
      * @param string $table_name
      * @return $this
      */
-    public function from(string $table_name): self {
+    public function from(string $table_name): self
+    {
         $this->table_name = $table_name;
         return $this;
     }
 
     /**
      * Set where conditions
-     * @param array|null $where
      * @return $this
      */
     public function where(?array $where): self
     {
-        $this->where = $where;
+        if (empty($where)) {
+            $this->where = null;
+        } else {
+            $this->where = $where;
+        }
         return $this;
     }
 
@@ -132,8 +184,8 @@ class QueryBuilder
      */
     public function limit(int $offset, int $count): self
     {
-        $this->offset = $offset;
-        $this->limit = $count;
+        $this->limit["offset"] = $offset;
+        $this->limit["limit"] = $count;
         return $this;
     }
 
@@ -143,6 +195,7 @@ class QueryBuilder
      * @param array|string $tables
      * @param array $relations
      * @return $this
+     * @deprecated
      */
     public function join(string $type, array|string $tables, array $relations): self
     {
@@ -155,10 +208,60 @@ class QueryBuilder
     }
 
     /**
+     * Inner join
+     * @param string $source
+     * @param string $source_column
+     * @param string $target
+     * @param string $target_column
+     * @return $this
+     */
+    public function innerJoin(
+        string $source,
+        string $source_column,
+        string $target,
+        string $target_column
+    ): self {
+        $this->join[] = [
+            "type" => self::INNER_JOIN,
+            "source" => [
+                "table" => $source,
+                "column" => $source_column
+            ],
+            "target" => [
+                "table" => $target,
+                "column" => $target_column
+            ]
+        ];
+        return $this;
+    }
+
+    /**
+     * Set offset
+     * @param int $offset
+     * @return $this
+     */
+    public function setFirstResults(int $offset): self
+    {
+        $this->limit["offset"] = $offset;
+        return $this;
+    }
+
+    /**
+     * Set limit
+     * @param int $count
+     * @return $this
+     */
+    public function setMaxResults(int $count): self
+    {
+        $this->limit["limit"] = $count;
+        return $this;
+    }
+
+    /**
      * Build query
      * @return string
      */
-    public function build(): string
+    public function getSQL(): string
     {
         return match ($this->method) {
             QueryBuilder::QUERY_SELECT => $this->buildSelectQuery(),
@@ -180,24 +283,27 @@ class QueryBuilder
             "FROM",
             "`$this->table_name`"
         ];
-        if(isset($this->join)) {
+        if (isset($this->join)) {
             $parts[] = $this->buildJoin();
         }
-        if(isset($this->where)) {
+        if (isset($this->where)) {
             $parts[] = "WHERE";
             $parts[] = $this->buildWhere();
         }
-        if(isset($this->limit)){
-            $parts[] = "LIMIT";
-            $parts[] = "$this->offset, $this->limit";;
+        if (isset($this->limit["limit"])) {
+            $limit_str = "LIMIT " . $this->limit["limit"];
+            if (isset($this->limit["offset"])) {
+                $limit_str .= " OFFSET " . $this->limit["offset"];
+            }
+            $parts[] = $limit_str;
         }
         return implode(" ", $parts) . ";";
     }
 
     /**
      * Build insert query for statement
-     * @throws QueryBuilderException
      * @return string
+     * @throws QueryBuilderException
      */
     private function buildInsertQuery(): string
     {
@@ -205,7 +311,7 @@ class QueryBuilder
             "INSERT INTO `$this->table_name`",
             "(" . $this->buildColumns() . ")",
             "VALUES",
-            "(". $this->buildParams() . ")"
+            "(" . $this->buildParams() . ")"
         ];
         return implode(" ", $parts) . ";";
     }
@@ -219,7 +325,7 @@ class QueryBuilder
         $parts = [
             "DELETE FROM `$this->table_name`"
         ];
-        if(isset($this->where)) {
+        if (isset($this->where)) {
             $parts[] = "WHERE";
             $parts[] = $this->buildWhere();
         }
@@ -228,8 +334,8 @@ class QueryBuilder
 
     /**
      * Build update query for statement
-     * @throws QueryBuilderException
      * @return string
+     * @throws QueryBuilderException
      */
     private function buildUpdateQuery(): string
     {
@@ -238,7 +344,7 @@ class QueryBuilder
             "SET",
             $this->buildParams()
         ];
-        if(isset($this->where)){
+        if (isset($this->where)) {
             $parts[] = "WHERE";
             $parts[] = $this->buildWhere();
         }
@@ -251,123 +357,143 @@ class QueryBuilder
      */
     private function buildColumns(): ?string
     {
-        if(empty($this->columns)) return null;
+        if (empty($this->columns)) {
+            return null;
+        }
         $cols_arr = [];
-        foreach ($this->columns as $table => $column){
-            // Handle nested columns
-            if(is_array($column)){
-                foreach ($column as $nested_column) {
-                    $cols_arr[] = "`$table`.`$nested_column`";
+        foreach ($this->columns as $table => $column) {
+            if (is_array($column)) {
+                if (is_string($table)) {
+                    // Handle nested columns
+                    $nested_columns = $this->columns[$table];
+                    foreach ($nested_columns as $nest_column) {
+                        if (is_array($nest_column)) {
+                            // Handle alias
+                            $source_column = key($nest_column);
+                            $column_as = $nest_column[$source_column];
+                            $cols_arr[] = "`$table`.`$source_column` as `$column_as`";
+                        } else {
+                            // Without alias
+                            $cols_arr[] = "`$table`.`$nest_column`";
+                        }
+                    }
+                } else {
+                    // Simple alias
+                    $source_column = key($column);
+                    $column_as = $column[$source_column];
+                    $cols_arr[] = "`$source_column` as `$column_as`";
                 }
+            } else {
+                $cols_arr[] = "`$column`";
             }
-            else $cols_arr[] = "`$column`";
         }
         return implode(",", $cols_arr);
     }
 
     /**
-     * Return joined 'where' conditions or `null` if parameter where is null
+     * Return joined 'where' conditions or `null` if where property is null
      * @return string|null
      */
     private function buildWhere(): ?string
     {
-        $where = null;
-        if(isset($this->where)){
-            $where = [];
-            foreach ($this->where as $key => $value) {
-                if(QueryBuilder::isOp($value))
-                    $where[] = $value;
-                else
-                    if(preg_match("/\w\.\w/", $key)) {
-                        $parts = explode(".", $key);
-                        $where[] = "`$parts[0]`.`$parts[1]`" . "=" . sprintf($this->param_format, $parts[0], $parts[1]);
-                    }
-                    else
-                        $where[] = "`$this->table_name`.`$key`" . "=" . sprintf($this->param_format, $this->table_name, $key);
-            }
-            $where = implode(" ", $where);
+        if (empty($this->where)) {
+            return null;
         }
-        return $where;
+        $where = [];
+        foreach ($this->where as $key => $value) {
+            // Process nested columns
+            if (is_array($value)) {
+                foreach ($value as $nest_key => $nest_value) {
+                    if (QueryBuilder::isOp($nest_value)) {
+                        $where[] = $nest_value;
+                    } else {
+                        $param_str = sprintf(
+                            $this->param_format,
+                            $key,
+                            $nest_key
+                        );
+                        $where[] = "`$key`.`$nest_key` = " . $param_str;
+                        $this->params[$param_str] = $nest_value;
+                    }
+                }
+            } else {
+                if (QueryBuilder::isOp($value)) {
+                    $where[] = $value;
+                } else {
+                    $where[] = "`$key` = :" . $key;
+                    $this->params[":$key"] = $value;
+                }
+            }
+        }
+        return implode(" ", $where);
     }
 
     /**
-     * Build join relations
+     * Build join
      * @return string|null
      */
     private function buildJoin(): ?string
     {
-        $join = null;
-        if(isset($this->join)){
-            $join = [$this->join["type"]];
-            if(is_array($this->join["tables"])) {
-                $formatted_table_names = array_map(fn (string $item) => "`$item`", $this->join["tables"]);
-                $join[] = "(" . implode(",", $formatted_table_names) . ")";
-            }
-            else {
-                $one_table_name = $this->join['tables'];
-                $join[] = "`$one_table_name`";
-            }
-            $join[] = "ON";
-            $join[] = $this->buildRelations();
-            $join = implode(" ", $join);
+        if (empty($this->join)) {
+            return null;
         }
-        return $join;
+        $joins = [];
+        foreach ($this->join as ["type" => $type, "source" => $source, "target" => $target]) {
+            $source_table = $source["table"];
+            $source_column = $source["column"];
+            $target_table = $target["table"];
+            $target_column = $target["column"];
+            $joins[] = "$type `$target_table` ON `$source_table`.`$source_column` = `$target_table`.`$target_column`";
+        }
+        return implode(" ", $joins);
     }
 
     /**
      * Build relations for join statement
      * @return string
+     * @deprecated
      */
     private function buildRelations(): string
     {
         $relations = null;
-        if(isset($this->join)){
+        if (isset($this->join)) {
             $relations = [];
             // Parse relations
-            foreach ($this->join["relations"] as $left_relation => $right_relation) {
-                $completed_relation = "";
-
-                // Formatter function
-                $formatter = function ($relation): string {
-                    $parts = explode(".", $relation);
-                    if(count($parts) > 1)
-                        return "`$parts[0]`.`$parts[1]`";
-                    else
-                        return "`$parts[0]`";
-                };
-                // Formatted relation
-                $completed_relation .= $formatter($left_relation) . "=" . $formatter($right_relation);
-                // Add completed_relation to relations array
+            foreach ($this->join["relations"] as $relation => ["source" => $source, "target" => $target]) {
+                $completed_relation = "`" . $source["table"] . "`.`" . $source["column"] . "`";
+                $completed_relation .= "=";
+                $completed_relation .= "`" . $target["table"] . "`.`" . $target["column"] . "`";
                 $relations[] = $completed_relation;
             }
-            if(count($relations) > 1)
+            if (count($relations) > 1) {
                 $relations = "(" . implode(" AND ", $relations) . ")";
-            else
+            } else {
                 $relations = implode("", $relations);
+            }
         }
         return $relations;
     }
 
     /**
      * Build params for <b>insert</b> or <b>update</b> statements
-     * @throws QueryBuilderException
      * @return string
+     * @throws QueryBuilderException
+     * @deprecated
      */
     private function buildParams(): string
     {
         $params = [];
-        if($this->method == self::QUERY_INSERT) {
+        if ($this->method == self::QUERY_INSERT) {
             foreach ($this->columns as $key) {
                 $params[] = sprintf($this->param_format, $this->table_name, $key);
             }
-        }
-        elseif ($this->method == self::QUERY_UPDATE) {
+        } elseif ($this->method == self::QUERY_UPDATE) {
             foreach ($this->columns as $key) {
                 $params[] = "$key" . "=" . sprintf($this->param_format, $this->table_name, $key);
             }
-        }
-        else
+        } else {
             throw new QueryBuilderException("This function use for insert and update statements only");
+        }
         return implode(",", $params);
     }
 
@@ -378,8 +504,9 @@ class QueryBuilder
      */
     private static function isOp(?string $value): bool
     {
-        if(empty($value))
+        if (empty($value)) {
             return false;
+        }
         return match (strtoupper($value)) {
             self::OP_AND, self::OP_OR => true,
             default => false,
@@ -391,40 +518,37 @@ class QueryBuilder
      * @return array|null
      * @throws QueryBuilderException
      */
-    public function getValuesToBind(): ?array
+    public function getParamsWithValuesWithTypes(): ?array
     {
-        return match ($this->method){
-            self::QUERY_SELECT, self::QUERY_DELETE => $this->_prepareValuesToBind($this->where),
-            self::QUERY_INSERT => $this->_prepareValuesToBind($this->values),
-            self::QUERY_UPDATE => $this->_prepareValuesToBind([...$this->values, ...$this->where]),
-        };
+        if (empty($this->params)) {
+            return null;
+        }
+        $parsed_params = [];
+        foreach ($this->params as $param => $value) {
+            // Select value type
+            $param_type = 2;
+            if (is_int($value)) {
+                $param_type = PDO::PARAM_INT;
+            } elseif (is_string($value)) {
+                $param_type = PDO::PARAM_STR;
+            } elseif (is_null($value)) {
+                $param_type = PDO::PARAM_NULL;
+            } else {
+                throw QueryBuilderException::UnsupportedType();
+            }
+            // Add value to bind
+            $parsed_params[$param]["type"] = $param_type;
+            $parsed_params[$param]["value"] = $value;
+        }
+        return $parsed_params;
     }
 
     /**
-     * Bind values to statement
-     * @param array|null $values
+     * Map query parameters
      * @return array|null
-     * @throws QueryBuilderException Throws if $value type is unsupported
      */
-    private function _prepareValuesToBind(?array $values): ?array
+    public function getParamsWithValues(): ?array
     {
-        if(empty($values)) return null;
-        $values_to_bind = [];
-        foreach ($values as $key => $value) {
-            // Skip the operator
-            if(QueryBuilder::isOp($key)) continue;
-
-            // Select value type
-            $param_type = 2;
-            if(is_int($value)) $param_type = PDO::PARAM_INT;
-            elseif (is_string($value)) $param_type = PDO::PARAM_STR;
-            elseif (is_null($value)) $param_type = PDO::PARAM_NULL;
-            else throw QueryBuilderException::UnsupportedType();
-
-            // Add value to bind
-            $formatted_param = sprintf($this->param_format, $this->table_name, $key);
-            $values_to_bind[$formatted_param] = ["type" => $param_type, "value" => $value];
-        }
-        return $values_to_bind;
+        return $this->params;
     }
 }
