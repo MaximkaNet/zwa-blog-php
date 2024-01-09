@@ -1,0 +1,55 @@
+<article class="post" id="post-{{id}}">
+    <section class="post-header">
+        <a href="{{user.link}}">
+            <img
+                    src="{{user.avatar}}"
+                    alt="User icon"
+                    class="user-avatar"
+            >
+        </a>
+        <div>
+            <a href="{{user.link}}" class="link-white">{{user.full_name}}</a>
+            <span class="post-date">{{date}}</span>
+        </div>
+    </section>
+    <section class="post-body">
+        <h1 class="post-title">
+            <a
+                    href="{{link}}"
+                    class="link-white"
+            >
+                {{title}}
+            </a>
+        </h1>
+        <div class="post-short-content">
+            {{content}}
+            <a href="{{link}}" class="link-orange">Read more...</a>
+        </div>
+    </section>
+    <section class="post-footer">
+        <div
+                class="post-footer-option"
+                data-post-id="{{id}}"
+                data-action="like"
+        >
+            <img
+                    class="option-img"
+                    src="{{assets_links.like}}"
+                    alt="like"
+            >
+            <span>{{rating}}</span>
+        </div>
+        <div
+                class="post-footer-option"
+                data-post-id="{{id}}"
+                data-action="save"
+        >
+            <img
+                    class="option-img"
+                    src="{{assets_links.save}}"
+                    alt="save"
+            >
+            <span>{{count_saved}}</span>
+        </div>
+    </section>
+</article>
