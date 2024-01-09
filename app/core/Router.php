@@ -1,6 +1,9 @@
 <?php
+
 namespace app\core;
-class Router {
+
+class Router
+{
     private array $routes = [];
     private string $prefix;
 
@@ -10,7 +13,8 @@ class Router {
      * @example http://domain.com/prefix - home page
      * @param string $prefix
      */
-    function __construct(string $prefix = "") {
+    function __construct(string $prefix = "")
+    {
         $this->prefix = $prefix;
         $this->setRoute('/404', 'get', function () {
             return [
@@ -37,7 +41,7 @@ class Router {
      */
     public function get(string $path, callable $callback): void
     {
-        $this->setRoute($path,"get", $callback);
+        $this->setRoute($path, "get", $callback);
     }
 
     /**
@@ -48,7 +52,7 @@ class Router {
      */
     public function post(string $path, callable $callback): void
     {
-        $this->setRoute($path,"post", $callback);
+        $this->setRoute($path, "post", $callback);
     }
 
     /**
@@ -59,7 +63,7 @@ class Router {
      */
     public function put(string $path, callable $callback): void
     {
-        $this->setRoute($path,"put", $callback);
+        $this->setRoute($path, "put", $callback);
     }
 
     /**
@@ -70,7 +74,7 @@ class Router {
      */
     public function patch(string $path, callable $callback): void
     {
-        $this->setRoute($path,"patch", $callback);
+        $this->setRoute($path, "patch", $callback);
     }
 
     /**
@@ -81,7 +85,7 @@ class Router {
      */
     public function delete(string $path, callable $callback): void
     {
-        $this->setRoute($path,"delete", $callback);
+        $this->setRoute($path, "delete", $callback);
     }
 
     /**
@@ -104,7 +108,7 @@ class Router {
     public function setRoute(string $path, string $method, callable $callback): void
     {
         $methods = explode("|", strtoupper($method));
-        foreach ($methods as $_method){
+        foreach ($methods as $_method) {
             $normalized_route = Router::normalizePath($path, $this->prefix);
             // Get params
             $regexp_route = $normalized_route;
@@ -170,7 +174,7 @@ class Router {
     public static function matchUrl(string $url, string $route, &$params): int|false
     {
         // Check if the route matches the url
-        $match_result = preg_match("#^" . $route ."$#", $url, $params);
+        $match_result = preg_match("#^" . $route . "$#", $url, $params);
         array_shift($params);
         return $match_result;
     }
@@ -179,19 +183,24 @@ class Router {
      * Match request url with routes and call callback
      * @param string $path
      * @param string $method
-     * @return View
+     * @return View|null
      */
-    public function resolve (string $path, string $method): View
+    public function resolve(string $path, string $method): ?View
     {
-        if (isset($this->routes[$method]))
+        if (isset($this->routes[$method])) {
+            $normalized_path = self::normalizePath($path);
             foreach ($this->routes[$method] as $route) {
-                if (Router::matchUrl($path, $route["regexp"], $params)) {
+                if (Router::matchUrl($normalized_path, $route["regexp"], $params)) {
                     $props = call_user_func($route["callback"], ...$params);
+                    if (empty($props)) {
+                        return null;
+                    }
                     $view = new View($props["template"]);
                     $view->setContext($props["context"] ?? []);
                     return $view;
                 }
             }
+        }
         // Not found page
         $props = call_user_func($this->getRoute('/404', 'get')["callback"]);
         $view = new View("404");
