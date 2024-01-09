@@ -2,44 +2,133 @@
 
 namespace app\controllers;
 
-use app\app\core\Application;
-use app\app\core\Router;
+use app\core\exception\ApplicationException;
+use app\core\Router;
 
 class AuthController
 {
     /**
      * Render view
-     * @return void
+     * @return array
+     * @throws ApplicationException
      */
-    public static function login(): void
+    public static function login(): array
     {
-        Application::getWebsiteSettings()->setPage('Login');
-        require_once "../views/login.mustache";
-    }
-
-    /**
-     * Render view
-     * @return void
-     */
-    public static function signup(): void
-    {
-        Application::getWebsiteSettings()->setPage('Signup');
-        require_once "../views/signup.mustache";
-    }
-
-    /**
-     * Render view
-     * @return void
-     */
-    public static function logout(): void
-    {
-        if(empty($_SESSION["user"])) {
-            $to_login = Router::link("/login", Application::getRouter()->getPrefix());
-            header("Location: $to_login", true, 301);
+        try {
+            $context = [
+                "head" => [
+                    "title" => "Login"
+                ],
+                "auth" => [
+                    "class_list" => "bg-primary",
+                    "scripts" => [
+                        "auth" => Router::link("/assets/js/auth.js")
+                    ]
+                ],
+            ];
+            if(isset($_SESSION["user"]["is_auth"]) and $_SESSION["user"]["is_auth"]){
+                $context["auth"]["status"] = [
+                    "user" => [
+                        "email" => $_SESSION["user"]["email"]
+                    ],
+                    "logo" => [
+                        "link" => Router::link("/assets/images/logo.svg")
+                    ],
+                    "continue" => [
+                        "link" => Router::link("/")
+                    ]
+                ];
+            } else {
+                $context["auth"]["login"] = [
+                    "logo" => [
+                        "link" => Router::link("/assets/images/logo.svg")
+                    ],
+                    "images" => [
+                        "email" => Router::link("/assets/images/email.svg"),
+                        "password" => Router::link("/assets/images/password.svg")
+                    ],
+                    "links" => [
+                        "signup" => Router::link("/signup")
+                    ]
+                ];
+            }
+            return ["template" => "auth", "context" => $context];
+        }catch (ApplicationException $e){
+            throw $e;
         }
-        else {
-            Application::getWebsiteSettings()->setPage('Logout');
-            require_once "../views/logout.mustache";
+    }
+
+    /**
+     * Render view
+     * @return array
+     * @throws ApplicationException
+     */
+    public static function signup(): array
+    {
+        try {
+            $context = [
+                "head" => [
+                    "title" => "Signup"
+                ],
+                "auth" => [
+                    "class_list" => "bg-gradient full-size",
+                    "scripts" => [
+                        "auth" => Router::link("/assets/js/auth.js")
+                    ]
+                ],
+            ];
+            $context["auth"]["signup"] = [
+                "logo" => [
+                    "link" => Router::link("/assets/images/logo.svg")
+                ],
+                "images" => [
+                    "email" => Router::link("/assets/images/email.svg"),
+                    "password" => Router::link("/assets/images/password.svg")
+                ],
+                "links" => [
+                    "login" => Router::link("/login")
+                ]
+            ];
+            return ["template" => "auth", "context" => $context];
+        } catch (ApplicationException $e){
+            throw $e;
+        }
+    }
+
+    /**
+     * Render view
+     * @return array
+     * @throws ApplicationException
+     */
+    public static function logout(): array
+    {
+        try {
+            if(empty($_SESSION["user"])) {
+                $to_login = Router::link("/login");
+                header("Location: $to_login", true, 301);
+                return [];
+            }
+            $context = [
+                "head" => [
+                    "page_title" => "Logout"
+                ],
+                "auth" => [
+                    "scripts" => [
+                        "auth" => Router::link("/assets/js/auth.js")
+                    ]
+                ]
+            ];
+            $context["auth"]["logout"] = [
+                "logo" => [
+                    "link" => Router::link("/assets/images/logo.svg")
+                ],
+                "links" => [
+                    "home" =>  Router::link("/category/articles")
+                ]
+            ];
+            return ["template" => "auth", "context" => $context];
+        } catch (ApplicationException $e) {
+            throw $e;
         }
     }
 }
