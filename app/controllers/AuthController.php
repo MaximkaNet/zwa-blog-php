@@ -113,6 +113,7 @@ class AuthController
                     "page_title" => "Logout"
                 ],
                 "auth" => [
+                    "class_list" => "bg-primary",
                     "scripts" => [
                         "auth" => Router::link("/assets/js/auth.js")
                     ]
