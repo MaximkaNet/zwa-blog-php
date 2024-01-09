@@ -1,2 +1,5 @@
-static
+static/*
 .idea
+node_modules
+vendor/*
+!vendor/autoloader.php
