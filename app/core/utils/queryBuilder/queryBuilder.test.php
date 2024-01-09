@@ -105,5 +105,17 @@ $test_handler->addTest("Delete query", function () {
     return var_export($qb->getParamsWithValuesWithTypes(), true);
 //    return $qb->getSQL();
 });
+$test_handler->addTest("Sorting results", function () {
+    $qb = new QueryBuilder();
+    $qb->select()
+        ->from("users")
+        ->sortAsc("id");
+    $sort_asc = $qb->getSQL();
+    $qb->sortDesc("id");
+    $sort_desc = $qb->getSQL();
+    $qb->orderBy(["test", "test23"]);
+    $sort_orderBy = $qb->getSQL();
+    return var_export([$sort_asc, $sort_desc, $sort_orderBy], true);
+});
 // Start test bench
 $test_handler->start();

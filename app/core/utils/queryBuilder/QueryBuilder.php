@@ -63,6 +63,11 @@ class QueryBuilder
     private ?array $limit = null;
 
     /**
+     * Order by
+     */
+    private ?array $order_by = null;
+
+    /**
      * Param format
      */
     private string $param_format = ":%s_%s";
@@ -292,6 +297,49 @@ class QueryBuilder
     }
 
     /**
+     * Order by
+     * @param string|array $columns
+     * @param string $sort_order
+     * @return self
+     */
+    public function orderBy(string|array $columns, string $sort_order = "ASC"): self
+    {
+        $this->order_by = [
+            "columns" => $columns,
+            "sort_order" => $sort_order
+        ];
+        return $this;
+    }
+
+    /**
+     * Sort order ascending
+     * @param string|array $columns
+     * @return $this
+     */
+    public function sortAsc(string|array $columns): self
+    {
+        $this->order_by = [
+            "columns" => $columns,
+            "sort_order" => "ASC"
+        ];
+        return $this;
+    }
+
+    /**
+     * Sort order descending
+     * @param string|array $columns
+     * @return $this
+     */
+    public function sortDesc(string|array $columns): self
+    {
+        $this->order_by = [
+            "columns" => $columns,
+            "sort_order" => "DESC"
+        ];
+        return $this;
+    }
+
+    /**
      * Build query
      * @return string
      */
@@ -330,6 +378,21 @@ class QueryBuilder
                 $limit_str .= " OFFSET " . $this->limit["offset"];
             }
             $parts[] = $limit_str;
+        }
+        if (isset($this->order_by["columns"])) {
+            $parts[] = "ORDER BY";
+            $columns = $this->order_by["columns"];
+            $sort_order = $this->order_by["sort_order"];
+            if (is_array($columns)) {
+                $parts[] = implode(", ", array_map(function ($col) {
+                    return "`$col`";
+                }, $columns));
+            } else {
+                $parts[] = "`$columns`";
+            }
+            if (isset($sort_order)) {
+                $parts[] = strtoupper($sort_order);
+            }
         }
         return implode(" ", $parts) . ";";
     }
@@ -491,7 +554,6 @@ class QueryBuilder
         }
         $set_props = [];
         foreach ($this->set as $key => $value) {
-
             $param_str = ":set_$key";
             $this->params[$param_str] = $value;
             $set_props[] = "`$key` = " . $param_str;
