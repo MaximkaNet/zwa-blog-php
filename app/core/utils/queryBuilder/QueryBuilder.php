@@ -22,14 +22,49 @@ class QueryBuilder
     const RIGHT_JOIN = "RIGHT JOIN";
     const CROSS_JOIN = "CROSS JOIN";
 
+    /**
+     * Query statement
+     */
     private ?int $method;
+
+    /**
+     * Table name
+     */
     private ?string $table_name;
+
+    /**
+     * Columns
+     */
     private array|string|null $columns = null;
-    private ?array $values = null;
+
+    /**
+     * The SET in update statement
+     */
+    private ?array $set = null;
+
+    /**
+     * Where
+     */
     private ?array $where = null;
+
+    /**
+     * Params. Will be used in bind methods
+     */
     private ?array $params = null;
+
+    /**
+     * Join
+     */
     private ?array $join = null;
+
+    /**
+     * Limit
+     */
     private ?array $limit = null;
+
+    /**
+     * Param format
+     */
     private string $param_format = ":%s_%s";
 
     /**
@@ -113,9 +148,11 @@ class QueryBuilder
         $this->table_name = $table_name;
         // Split as columns and values
         $this->columns = [];
-        $this->values = $values;
+        $this->params = [];
         foreach ($values as $key => $value) {
             $this->columns[] = $key;
+            $param_str = ":$table_name" . "_" . $key;
+            $this->params[$param_str] = $value;
         }
         return $this;
     }
@@ -131,11 +168,8 @@ class QueryBuilder
         $this->method = self::QUERY_UPDATE;
         $this->table_name = $table_name;
         // Split as columns and values
-        $this->columns = [];
-        $this->values = $values;
-        foreach ($values as $key => $value) {
-            $this->columns[] = $key;
-        }
+        $this->params = [];
+        $this->set = $values;
         return $this;
     }
 
@@ -303,7 +337,6 @@ class QueryBuilder
     /**
      * Build insert query for statement
      * @return string
-     * @throws QueryBuilderException
      */
     private function buildInsertQuery(): string
     {
@@ -311,7 +344,7 @@ class QueryBuilder
             "INSERT INTO `$this->table_name`",
             "(" . $this->buildColumns() . ")",
             "VALUES",
-            "(" . $this->buildParams() . ")"
+            "(" . implode(", ", array_keys($this->params)) . ")"
         ];
         return implode(" ", $parts) . ";";
     }
@@ -335,14 +368,13 @@ class QueryBuilder
     /**
      * Build update query for statement
      * @return string
-     * @throws QueryBuilderException
      */
     private function buildUpdateQuery(): string
     {
         $parts = [
             "UPDATE `$this->table_name`",
             "SET",
-            $this->buildParams()
+            $this->buildUpdateSet()
         ];
         if (isset($this->where)) {
             $parts[] = "WHERE";
@@ -449,52 +481,22 @@ class QueryBuilder
     }
 
     /**
-     * Build relations for join statement
+     * Build update SET
      * @return string
-     * @deprecated
      */
-    private function buildRelations(): string
+    private function buildUpdateSet(): string
     {
-        $relations = null;
-        if (isset($this->join)) {
-            $relations = [];
-            // Parse relations
-            foreach ($this->join["relations"] as $relation => ["source" => $source, "target" => $target]) {
-                $completed_relation = "`" . $source["table"] . "`.`" . $source["column"] . "`";
-                $completed_relation .= "=";
-                $completed_relation .= "`" . $target["table"] . "`.`" . $target["column"] . "`";
-                $relations[] = $completed_relation;
-            }
-            if (count($relations) > 1) {
-                $relations = "(" . implode(" AND ", $relations) . ")";
-            } else {
-                $relations = implode("", $relations);
-            }
+        if (empty($this->set)) {
+            return "";
         }
-        return $relations;
-    }
+        $set_props = [];
+        foreach ($this->set as $key => $value) {
 
-    /**
-     * Build params for <b>insert</b> or <b>update</b> statements
-     * @return string
-     * @throws QueryBuilderException
-     * @deprecated
-     */
-    private function buildParams(): string
-    {
-        $params = [];
-        if ($this->method == self::QUERY_INSERT) {
-            foreach ($this->columns as $key) {
-                $params[] = sprintf($this->param_format, $this->table_name, $key);
-            }
-        } elseif ($this->method == self::QUERY_UPDATE) {
-            foreach ($this->columns as $key) {
-                $params[] = "$key" . "=" . sprintf($this->param_format, $this->table_name, $key);
-            }
-        } else {
-            throw new QueryBuilderException("This function use for insert and update statements only");
+            $param_str = ":set_$key";
+            $this->params[$param_str] = $value;
+            $set_props[] = "`$key` = " . $param_str;
         }
-        return implode(",", $params);
+        return implode(", ", $set_props);
     }
 
     /**

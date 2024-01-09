@@ -72,5 +72,38 @@ $test_handler->addTest("Crash test query builder with ColumnsProvider", function
     $result = QueryBuilder::parseQueryResult($stmt->fetchAll(PDO::FETCH_ASSOC), true);
     echo var_export($result, true);
 });
+$test_handler->addTest("Insert query", function () {
+    $qb = new QueryBuilder();
+    $qb->insertInto("posts", [
+        "title" => "Hello",
+        "content" => "Hi",
+        "status" => "posted"
+    ]);
+    return $qb->getSQL();
+});
+$test_handler->addTest("Update query", function () {
+    $qb = new QueryBuilder();
+    $qb->update("posts", [
+        "title" => "Hello hi!"
+    ])
+        ->where([
+            "title" => "tets"
+        ]);
+    $qb->getSQL();
+    return var_export($qb->getParamsWithValuesWithTypes(), true);
+//    return $qb->getSQL();
+});
+$test_handler->addTest("Delete query", function () {
+    $qb = new QueryBuilder();
+    $qb->deleteFrom("posts")
+        ->where([
+            "posts" => [
+                "id" => 1
+            ]
+        ]);
+    echo $qb->getSQL();
+    return var_export($qb->getParamsWithValuesWithTypes(), true);
+//    return $qb->getSQL();
+});
 // Start test bench
 $test_handler->start();
