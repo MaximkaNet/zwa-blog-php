@@ -1,13 +1,15 @@
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="{{favicon_link}}">
-    <title>{{page_title}}</title>
-    {{#stylesheets}}
-        <link rel="stylesheet" href="{{link}}">
-    {{/stylesheets}}
-    {{#scripts}}
-        <script src="{{src}}"></script>
-    {{/scripts}}
-    <noscript>Available javascript to use this application</noscript>
+    {{#head}}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/x-icon" href="{{favicon_link}}">
+        <title>{{title}}</title>
+        {{#stylesheets}}
+            <link rel="stylesheet" href="{{link}}">
+        {{/stylesheets}}
+        {{#scripts}}
+            <script src="{{src}}"></script>
+        {{/scripts}}
+        <noscript>Available javascript to use this application</noscript>
+    {{/head}}
 </head>

@@ -1,24 +1,21 @@
-<header class="layout-header">
-    <a
-        class="logo-container"
-        href="{{header.link_to_website}}"
-    >
-        <img
-            class="logo"
-            src="{{header.logo}}"
-            alt="Logo image"
-        >
-    </a>
-    {{> components/common/nav}}
-    {{# authorized }}
-        <div class="header-account">
-            <a href="/admin" class="link-white">Account</a>
-        </div>
-    {{/authorized}}
-    {{^authorized}}
-        <div class="header-account">
-            <a href="/signup" class="primary-btn">Sign up</a>
-            <a href="/login" class="secondary-btn">Login</a>
-        </div>
-    {{/authorized}}
-</header>
+{{#header}}
+    <header class="layout-header">
+        {{#logo}}
+            <a class="logo-container" href="{{link}}">
+                <img class="logo" src="{{image}}" alt="Logo image">
+            </a>
+        {{/logo}}
+        {{>components/common/nav}}
+        {{#auth.authorized}}
+            <div class="header-account">
+                <a href="{{admin_link}}" class="link-white">Account</a>
+            </div>
+        {{/auth.authorized}}
+        {{#auth.unauthorized}}
+            <div class="header-account">
+                <a href="{{signup_link}}" class="primary-btn">Sign up</a>
+                <a href="{{login_link}}" class="secondary-btn">Login</a>
+            </div>
+        {{/auth.unauthorized}}
+    </header>
+{{/header}}
