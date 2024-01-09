@@ -1,9 +1,3 @@
-.signup-body {
-    height: 100%;
-    min-height: 100vh;
-    background: linear-gradient(220deg, #EF745C 0%, #98414E 40%, #34073D 100%) no-repeat;
-}
-
 .auth-padding {
     padding-top: 40px;
 }
@@ -12,7 +6,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    width: 80%;
+    width: 100%;
     max-width: 350px;
     padding: 30px 35px;
     border-radius: 20px;

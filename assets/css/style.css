@@ -3,6 +3,8 @@
 @import "auth/error.css";
 @import "auth/auth.css";
 @import "single.css";
+@import "profile.css";
+@import "pagination.css";
 /*@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');*/
 /* Reset css*/
 * {
@@ -16,16 +18,21 @@
     --primary-color: #34073D;
     --secondary-color: #380C41;
     --third-color: #EF745C;
+    --third-color__hover: #EF745C;
+    --white-color: #e0e0e0;
+    --max-width: 1000px;
 }
 
-.main-body {
-    background-color: var(--primary-color);
+
+/* Containers */
+.container {
+    max-width: var(--max-width);
 }
 
-.posts {
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
+.auth-container {
+    --padding: 20px;
+    max-width: calc(350px + var(--padding));
+    padding: 0 var(--padding);
 }
 
 /* Buttons */
@@ -88,6 +95,20 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.full-size {
+    height: 100%;
+    min-height: 100vh;
+}
+
+.bg-primary {
+    background-color: var(--primary-color);
+}
+
 .secondary-bg {
     background-color: var(--secondary-color)
+}
+
+.bg-gradient {
+    background: linear-gradient(220deg, #EF745C 0%, #98414E 40%, #34073D 100%) no-repeat;
 }
