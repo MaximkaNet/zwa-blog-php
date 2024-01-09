@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{app.lang}}">
 {{>components/common/head}}
-<body class="bg-primary auth-padding">
+<body class="{{auth.class_list}} auth-padding">
 {{#auth}}
 <div class="auth-container center">
     <ul class="auth-errors"></ul>
@@ -11,6 +11,9 @@
     {{#login}}
         {{>components/auth/form-login}}
     {{/login}}
+    {{#signup}}
+        {{>components/auth/form-signup}}
+    {{/signup}}
     {{#logout}}
         {{>components/auth/form-logout}}
     {{/logout}}
