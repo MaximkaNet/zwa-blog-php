@@ -1,13 +1,5 @@
-<?php
-
-use app\app\core\Application;
-use app\app\core\Router;
-
-$router = Application::getRouter();
-?>
-
-<form class="auth-form center secondary-bg" method="post" id="logout_form">
-    <img class="logo" src="<?= Router::link("/assets/images/logo.svg", $router->getPrefix()); ?>" alt="logo">
+<form class="auth-form secondary-bg" method="post" id="logout_form">
+    <img class="logo" src="{{logo.link}}" alt="logo">
     <p class="auth-info">Do you really want to log out?</p>
     <div class="auth-form-section">
         <button
@@ -17,7 +9,7 @@ $router = Application::getRouter();
         <a
             type="submit"
             class="primary-btn"
-            href="<?= Router::link("/", $router->getPrefix()); ?>"
+            href="{{links.home}}"
         >No</a>
     </div>
 </form>

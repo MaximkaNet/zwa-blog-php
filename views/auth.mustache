@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="{{app.lang}}">
+{{>components/common/head}}
+<body class="bg-primary auth-padding">
+{{#auth}}
+<div class="auth-container center">
+    <ul class="auth-errors"></ul>
+    {{#status}}
+        {{>components/auth/status}}
+    {{/status}}
+    {{#login}}
+        {{>components/auth/form-login}}
+    {{/login}}
+    {{#logout}}
+        {{>components/auth/form-logout}}
+    {{/logout}}
+</div>
+<script src="{{scripts.auth}}" type="module"></script>
+{{/auth}}
+</body>
+</html>

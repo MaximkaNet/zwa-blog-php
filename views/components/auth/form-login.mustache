@@ -1,37 +1,30 @@
-<?php
-use app\app\core\Application;
-use app\app\core\Router;
-
-$router = Application::getRouter();
-?>
-
 <form
-    class="auth-form secondary-bg center"
-    id="login_form"
-    method="post"
+        class="auth-form secondary-bg"
+        id="login_form"
+        method="post"
 >
     <img
-        class="logo"
-        src="<?= Router::link("/assets/images/logo.svg", $router->getPrefix()); ?>"
-        alt="logo"
+            class="logo"
+            src="{{logo.link}}"
+            alt="logo"
     >
     <fieldset>
         <label for="login-form-email" class="auth-form-input">
-            <img src="<?= Router::link("/assets/images/email.svg", $router->getPrefix()); ?>" alt="email">
+            <img src="{{images.email}}" alt="email">
             <input
-                id="login-form-email"
-                type="email"
-                name="email"
-                placeholder="email"
+                    id="login-form-email"
+                    type="email"
+                    name="email"
+                    placeholder="email"
             >
         </label>
         <label for="login-form-password" class="auth-form-input">
-            <img src="<?= Router::link("/assets/images/password.svg", $router->getPrefix()); ?>" alt="password">
+            <img src="{{images.password}}" alt="password">
             <input
-                id="login-form-password"
-                type="password"
-                name="password"
-                placeholder="password"
+                    id="login-form-password"
+                    type="password"
+                    name="password"
+                    placeholder="password"
             >
         </label>
     </fieldset>
@@ -39,8 +32,8 @@ $router = Application::getRouter();
         <button class="primary-btn" type="submit">Login</button>
         <span class="extra-action">
             <a
-                href="<?= Router::link("/signup", $router->getPrefix())?>"
-                class="link-orange"
+                    href="{{links.signup}}"
+                    class="link-orange"
             >Sign up</a>&nbsp;if you don't have an account yet</span>
     </div>
 </form>
