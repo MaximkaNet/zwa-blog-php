@@ -10,6 +10,12 @@ interface ICategory
     public function __construct();
 
     /**
+     * Get category position
+     * @return int
+     */
+    public function getPosition(): int;
+
+    /**
      * Get category id
      * @return int|null
      */

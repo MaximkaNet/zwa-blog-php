@@ -7,9 +7,15 @@ class Category implements ICategory
     private int $id;
     private string $name;
     private string $display_name;
+    private int $pos;
 
     public function __construct()
     {
+    }
+
+    public function getPosition(): int
+    {
+        return $this->pos ?? 0;
     }
 
     public function getId(): ?int

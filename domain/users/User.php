@@ -1,149 +1,147 @@
 <?php
-namespace app\domain\entity;
 
-require_once "../../core/entity.php";
+namespace domain\users;
 
-use app\core\entity\Entity;
-
-class User extends Entity
+class User implements IUser
 {
-    protected ?int $id;
-    protected ?string $email;
-    protected ?string $password; /* Bcrypt hash (60 chars)*/
-    protected ?string $first_name;
-    protected ?string $last_name;
-    protected ?string $avatar;
+    /**
+     * The users identification
+     */
+    private int $id;
 
     /**
-     * Init a user
-     * @param int|null $id
-     * @param string|null $email
-     * @param string|null $password must be bcrypt hash
-     * @param string|null $first_name
-     * @param string|null $last_name
-     * @param string|null $avatar
+     * The users email
      */
-    public function __construct(
-        int $id = null,
-        string $email = null,
-        string $password = null,
-        string $first_name = null,
-        string $last_name = null,
-        string $avatar = null
-    )
+    private string $email;
+
+    /**
+     * The password <br>
+     * Bcrypt hash (60 chars)
+     */
+    private string $password;
+
+    /**
+     * The full name
+     */
+    private string $full_name;
+
+    /**
+     * The username (15 chars)
+     */
+    private string $username;
+
+    /**
+     * The users avatar
+     */
+    private string $avatar;
+
+    /**
+     * The users role
+     */
+    private string $role;
+
+    /**
+     * The users added date
+     */
+    private string $created_at;
+
+    public function __construct()
     {
-        $this->id = $id;
-        $this->email = $email;
-        $this->password = $password;
-        $this->first_name = $first_name;
-        $this->last_name = $last_name;
-        $this->avatar = $avatar;
     }
 
-    /**
-     * @return ?int
-     */
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
-    public function setId(mixed $id): void
+    public function getUserName(): ?string
     {
-        $this->id = $id;
+        return $this->username ?? null;
     }
 
-    /**
-     * @param string|null $first_name
-     */
-    public function setFirstName(?string $first_name): void
+    public function getFullName(): ?string
     {
-        $this->first_name = $first_name;
+        return $this->full_name ?? null;
     }
 
-    /**
-     * @param string|null $last_name
-     */
-    public function setLastName(?string $last_name): void
+    public function setFullName(string $full_name): void
     {
-        $this->last_name = $last_name;
+        $this->full_name = $full_name;
     }
 
-    /**
-     * @param string|null $email
-     */
-    public function setEmail(?string $email): void
-    {
-        $this->email = $email;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getEmail(): ?string
     {
-        return $this->email;
+        return $this->email ?? null;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPassword(): ?string
     {
-        return $this->password;
+        return $this->password ?? null;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getFirstName(): ?string
+    public function setPassword(string $password, bool $make_hash = false): void
     {
-        return $this->first_name;
+        if ($make_hash) {
+            $this->password = password_hash($password, PASSWORD_BCRYPT);
+        } else {
+            if (strlen($password) > 60) {
+                throw new UserException("Hash must be less or equal then 60 characters");
+            }
+            $this->password = $password;
+        }
     }
 
-    /**
-     * @return string|null
-     */
-    public function getLastName(): ?string
-    {
-        return $this->last_name;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getAvatar(): ?string
     {
-        return $this->avatar;
+        return $this->avatar ?? null;
     }
 
-    /**
-     * Return full username
-     * @return string
-     */
-    public function getFullName(): string
+    public function setAvatar(string $filename): void
     {
-        $full_username = $this->first_name;
-        if(isset($this->last_name))
-            $full_username .= " " . $this->last_name;
-        return $full_username;
+        $this->avatar = $filename;
     }
 
-    /**
-     * Set new password using password_hash function
-     * @param string $new_password
-     */
-    public function changePassword(string $new_password): void
+    public function getRole(): ?string
     {
-        $password_hash = password_hash($new_password, PASSWORD_BCRYPT);
-        $this->password = $password_hash;
+        return $this->role ?? null;
     }
 
-    /**
-     * @param string $avatar
-     */
-    public function changeAvatar(string $avatar): void
+    public function setRole(string $role): void
     {
-        $this->avatar = $avatar;
+        if (
+            $role === UserRole::USER ||
+            $role === UserRole::ADMIN ||
+            $role === UserRole::MODERATOR
+        ) {
+            $this->role = $role;
+        } else {
+            throw new UserException("Incorrect role given");
+        }
+    }
+
+    public static function getRoleLevel(string $role): int
+    {
+        return match ($role) {
+            UserRole::USER => 0,
+            UserRole::MODERATOR => 1,
+            UserRole::ADMIN => 2,
+            default => throw new UserException("Incorrect role")
+        };
+    }
+
+    public function getDatetimeOfCreate(): ?string
+    {
+        return $this->created_at ?? null;
+    }
+
+    public function canPromoteTo(string $role): bool
+    {
+        $this_role = $this->getRole();
+        if (empty($this_role)) {
+            throw new UserException("Role is not set");
+        }
+        $this_level = self::getRoleLevel($this_role);
+        $subject_level = self::getRoleLevel($role);
+        return $this_level >= $subject_level;
     }
 }
