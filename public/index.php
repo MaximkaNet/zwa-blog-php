@@ -10,6 +10,7 @@ use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+$dotenv->required(['URL_PREFIX', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']);
 
 $app = new Application();
 
