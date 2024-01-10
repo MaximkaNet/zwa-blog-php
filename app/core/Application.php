@@ -18,7 +18,7 @@ class Application
     {
         $this->meta_head = new Meta();
         $this->meta_head->setLanguage("cz");
-        $this->meta_head->setFaviconLink(Router::link("/assets/images/favicon.ico"));
+        $this->meta_head->setFaviconLink(Router::link("/assets/images/favicon.ico", $_ENV["URL_PREFIX"]));
     }
 
     /**
@@ -53,14 +53,21 @@ class Application
         $request_method = $req->getServerParams()["REQUEST_METHOD"];
         if(empty($this->router))
             throw new ApplicationException("Router has not applied");
+        session_start();
         $view = $this->router->resolve($request_uri, $request_method);
-        $view->addValuesToContext([
-            "lang" => $this->meta_head->getLanguage(),
-            "favicon_link" => $this->meta_head->getFaviconLink(),
-            "stylesheets" => [
-                ["link" => Router::link("/assets/css/style.css")]
-            ]
-        ]);
-        echo $view->render();
+        if(isset($view)){
+            $view->addValuesToContext([
+                "app" => [
+                    "lang" => $this->meta_head->getLanguage()
+                ],
+                "head" => [
+                    "favicon_link" => $this->meta_head->getFaviconLink(),
+                    "stylesheets" => [
+                        ["link" => Router::link("/assets/css/style.css", $_ENV["URL_PREFIX"])]
+                    ]
+                ]
+            ]);
+            echo $view->render();
+        }
     }
 }
