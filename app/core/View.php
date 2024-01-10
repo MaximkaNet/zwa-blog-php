@@ -22,9 +22,7 @@ class View
 
     public function addValuesToContext(array $values): void
     {
-        foreach ($values as $key => $value) {
-            $this->props[$key] = $value;
-        }
+        $this->props = array_merge_recursive($this->props, $values);
     }
 
     public function render(): string
