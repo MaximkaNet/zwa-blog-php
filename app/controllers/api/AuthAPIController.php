@@ -13,7 +13,7 @@ class AuthAPIController
      * Login api
      * @return string|null
      */
-    public static function login(): ?string
+    public static function login(): ?array
     {
         $response_body = new Response();
         header("Content-Type: application/json");
@@ -74,7 +74,7 @@ class AuthAPIController
      * Signup api
      * @return string|null
      */
-    public static function signup(): ?string
+    public static function signup(): ?array
     {
         $response_body = new Response();
         header("Content-Type: application/json");
@@ -94,7 +94,8 @@ class AuthAPIController
         if (!empty($validation_errors)) {
             $response_body->setErrors($validation_errors);
             http_response_code(400);
-            return $response_body->toJSON();
+            echo $response_body->toJSON();
+            return [];
         }
 
         $service = new UserService();
@@ -114,14 +115,15 @@ class AuthAPIController
             ]);
             http_response_code(409);
         }
-        return $response_body->toJSON();
+        echo $response_body->toJSON();
+        return [];
     }
 
     /**
      * Logout api
      * @return string|null
      */
-    public static function logout(): ?string
+    public static function logout(): ?array
     {
         $response = new Response();
         header("Content-Type: application/json");
