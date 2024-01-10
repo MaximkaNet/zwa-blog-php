@@ -44,7 +44,7 @@ async function submitForm(event, uri, redirect = "/") {
     if(result.errors.length !== 0)
         renderErrors(result.errors);
     else
-        window.location.href = redirect;
+        window.location.href = PREFIX + redirect;
 }
 
 if(loginForm) {
