@@ -1,7 +1,7 @@
 <?php
-
-
 // Admin routes
+use app\controllers\AdminController;
+
 $router->get('/admin', [AdminController::class, 'dashboard']);
 //$router->get('/admin/create-article', [AdminController::class, 'createArticle']);
 $router->get('/admin/edit-article/:article_id', [AdminController::class, 'editArticle']);
