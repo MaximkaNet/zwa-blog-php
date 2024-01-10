@@ -1,81 +1,23 @@
-<?php
-
-use app\app\core\Router;
-use app\app\core\Application;
-
-$router = Application::getRouter();
-?>
-
 <!DOCTYPE html>
-<html lang="en">
-<?php require_once "components/common/head.php"; ?>
-<body class="main-body">
-<?php require_once "components/common/header.php"; ?>
-<main class="posts">
-    <?php if(isset($posts)): ?>
-    <?php foreach ($posts as $post): ?>
-    <article class="post" id="post-<?= $post->getId(); ?>">
-    <?php
-        $user_link = Router::link("/users/" . $post->getUser()->getId(), $router->getPrefix());
-        $post_url = Router::link("/articles/" . $post->getId(), $router->getPrefix());
-    ?>
-        <section class="post-header">
-            <a href="<?= $user_link ?>">
-                <img
-                    src="<?= Router::link("static/users/avatar1.ico", $router->getPrefix()); ?>"
-                    alt="User icon"
-                    class="user-avatar"
-                >
-            </a>
-            <div>
-                <a href="<?= $user_link ?>" class="link-white"><?= $post->getUser()->getFirstName(); ?></a>
-                <span class="post-date"><?= "19.11.2023" ?></span>
-            </div>
-        </section>
-        <section class="post-body">
-            <h1 class="post-title">
-                <a
-                    href="<?= $post_url; ?>"
-                    class="link-white">
-                    <?= $post->getTitle(); ?>
-                </a>
-            </h1>
-            <div class="post-short-content">
-                <?php $content = $post->getContent(); ?>
-                <?php if(isset($content)): ?>
-                <?= $post->getContent(); ?>
-                <?php endif; ?>
-                <a href="<?= $post_url; ?>" class="link-orange">Read more...</a>
-            </div>
-        </section>
-        <section class="post-footer">
-            <div
-                class="post-footer-option"
-                data-post-id="<?= $post->getId(); ?>"
-                data-action="like"
-            >
-                <img class="option-img" src="<?= Router::link("assets/images/like.svg", $router->getPrefix()); ?>" alt="like">
-                <span><?= $post->getRating() ?? 0; ?></span>
-            </div>
-            <div
-                class="post-footer-option"
-                data-post-id="<?= $post->getId(); ?>"
-                data-action="save"
-            >
-                <img class="option-img" src="<?= Router::link("assets/images/save.svg", $router->getPrefix()); ?>" alt="save">
-                <span><?= $post->getCountSaved() ?? 0; ?></span>
-            </div>
-        </section>
-    </article>
-    <?php
-        endforeach;
-        else:
-    ?>
-    <div class="post post-not-found">
-        Posts not found
+<html lang="{{app.lang}}">
+{{>components/common/head}}
+<body class="bg-primary">
+{{>components/common/header}}
+<main class="content">
+    <div class="posts container center">
+        {{#articles.items}}
+            {{>components/articles/article}}
+        {{/articles.items}}
+        {{^articles.items}}
+            {{>components/articles/not_found}}
+        {{/articles.items}}
     </div>
-    <?php endif; ?>
+    <div class="pagination container center">
+        {{#articles.pagination}}
+            {{>components/common/pagination}}
+        {{/articles.pagination}}
+    </div>
 </main>
-<?php require_once "components/common/footer.php"; ?>
+{{>components/common/footer}}
 </body>
 </html>
