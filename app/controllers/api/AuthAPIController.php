@@ -4,8 +4,10 @@ namespace app\controllers\api;
 
 use app\core\exception\ApplicationException;
 use app\core\http\Response;
+use domain\users\UserService;
 
-class AuthAPIController {
+class AuthAPIController
+{
     /**
      * Login api
      * @return string|null
@@ -27,47 +29,31 @@ class AuthAPIController {
 
         // Check input values
         $validation_errors = [];
-        if(empty($_POST["email"])) {
+        if (empty($_POST["email"])) {
             $validation_errors[] = ["message" => "Email field is empty"];
         }
         if (empty($_POST["password"])) {
             $validation_errors[] = ["message" => "Password field is empty"];
         }
 
-        if(!empty($validation_errors)){
+        if (!empty($validation_errors)) {
             $response_body->setErrors($validation_errors);
             http_response_code(400);
             echo $response_body->toJSON();
             return null;
         }
 
-//        $service = new UserService();
-        $login = function ($email, $password){
-            if($email === "mail@mail.com" and password_verify($password, password_hash("123", PASSWORD_DEFAULT))){
-                return [
-                    "email" => "mail@mail.com",
-                    "id" => 1,
-                    "role" => "user"
-                ];
-            }
-            throw new ApplicationException("Bad request", 400);
-        };
+        $service = new UserService();
         // Process login
         $email = htmlspecialchars($_POST["email"]);
         $password = htmlspecialchars($_POST["password"]);
 
         try {
-//            $user = $service->login($email, $password);
-            $user = $login($email, $password);
+            $user = $service->login($email, $password);
             $_SESSION["user"]["is_auth"] = true;
-            // ...
-            $_SESSION["user"]["email"] = $user["email"];
-            $_SESSION["user"]["id"] = $user["id"];
-            $_SESSION["user"]["role"] = $user["role"];
-            // ...
-//            $_SESSION["user"]["email"] = $user->getEmail();
-//            $_SESSION["user"]["id"] = $user->getId();
-//            $_SESSION["user"]["role"] = $user->getRole();
+            $_SESSION["user"]["email"] = $user->getEmail();
+            $_SESSION["user"]["id"] = $user->getId();
+            $_SESSION["user"]["role"] = $user->getRole();
             http_response_code(200);
             $response_body->setMessage("Login success");
         } catch (ApplicationException $exception) {
@@ -94,17 +80,17 @@ class AuthAPIController {
 
         // Validation input fields
         $validation_errors = [];
-        if(empty($_POST["first_name"])){
+        if (empty($_POST["first_name"])) {
             $validation_errors[] = ["message" => "First name is required"];
         }
-        if(empty($_POST["email"])){
+        if (empty($_POST["email"])) {
             $validation_errors[] = ["message" => "Email is required"];
         }
-        if(empty($_POST["password"])){
+        if (empty($_POST["password"])) {
             $validation_errors[] = ["message" => "Password is required"];
         }
 
-        if(!empty($validation_errors)){
+        if (!empty($validation_errors)) {
             $response_body->setErrors($validation_errors);
             http_response_code(400);
             return $response_body->toJSON();
@@ -138,12 +124,11 @@ class AuthAPIController {
     {
         $response = new Response();
         header("Content-Type: application/json");
-        if(isset($_SESSION["user"])){
+        if (isset($_SESSION["user"])) {
             session_unset();
             $response->setMessage("User logout successful");
             http_response_code(200);
-        }
-        else {
+        } else {
             $response->setErrors([["message" => "User already logged out"]]);
             http_response_code(400);
         }
