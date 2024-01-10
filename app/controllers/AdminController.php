@@ -1,40 +1,93 @@
 <?php
 
 namespace app\controllers;
-use app\app\core\Application;
-use app\app\core\Router;
 
-class AdminController {
-    public static function dashboard(): void
+use app\core\Router;
+
+class AdminController
+{
+    /**
+     * @return void
+     */
+    public static function dashboard(): array
     {
-        if(!isset($_SESSION["users"])) {
-            header("Location: " . Router::absoluteLink("/login", Application::getRouter()->getPrefix()));
-            return;
+        if (empty($_SESSION["user"])) {
+            header("Location: " . Router::link("/login", $_ENV["URL_PREFIX"]));
+            return [];
         }
-        include_once "../views/admin/admin.php";
+        $context = [
+            "head" => [
+                "title" => "Dashboard"
+            ],
+            "header" => [
+                "auth" => [],
+                "nav" => [
+                    "items" => []
+                ],
+                "logo" => [
+                    "image" => Router::link("/assets/images/logo.svg", $_ENV["URL_PREFIX"]),
+                    "link" => Router::link("/category/articles", $_ENV["URL_PREFIX"])
+                ]
+            ],
+            "articles" => [
+                "items" => [],
+                "pagination" => [
+                    "items" => []
+                ]
+            ],
+            "widgets" => [],
+            "footer" => [],
+        ];
+        return ["template" => "admin/admin", "context" => $context];
     }
-    public static function createArticle(): void
+
+    public static function createArticle(): array
     {
-        if(!isset($_SESSION["users"])) {
-            header("Location: " . Router::absoluteLink("/login", Application::getRouter()->getPrefix()));
-            return;
+        if (empty($_SESSION["user"])) {
+            header("Location: " . Router::link("/login", $_ENV["URL_PREFIX"]));
+            return [];
         }
         echo "Create article";
     }
-    public static function editArticle(): void
+
+    public static function editArticle(): array
     {
-        if(!isset($_SESSION["users"])) {
-            header("Location: " . Router::absoluteLink("/login", Application::getRouter()->getPrefix()));
-            return;
+        if (empty($_SESSION["user"])) {
+            header("Location: " . Router::link("/login", $_ENV["URL_PREFIX"]));
+            return [];
         }
         echo "Edit article";
     }
-    public static function settings(): void
+
+    public static function settings(): array
     {
-        if(!isset($_SESSION["users"])) {
-            header("Location: " . Router::absoluteLink("/login", Application::getRouter()->getPrefix()));
-            return;
+        if (empty($_SESSION["user"])) {
+            header("Location: " . Router::link("/login", $_ENV["URL_PREFIX"]));
+            return [];
         }
-        echo "Settings";
+        $context = [
+            "head" => [
+                "title" => "Settings"
+            ],
+            "header" => [
+                "auth" => [],
+                "nav" => [
+                    "items" => []
+                ],
+                "logo" => [
+                    "image" => Router::link("/assets/images/logo.svg", $_ENV["URL_PREFIX"]),
+                    "link" => Router::link("/category/articles", $_ENV["URL_PREFIX"])
+                ]
+            ],
+            "articles" => [
+                "items" => [],
+                "pagination" => [
+                    "items" => []
+                ]
+            ],
+            "widgets" => [],
+            "footer" => [],
+        ];
+        return ["template" => "admin/settings", "context" => $context];
     }
 }
