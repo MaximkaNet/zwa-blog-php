@@ -1,14 +1,43 @@
-<?php
-use app\app\core\Application;
-?>
 <!doctype html>
 <html lang="en">
-<?php require_once "components/common/head.php"; ?>
-<body class="main-body">
-<?php require_once "components/common/header.php"; ?>
-<article class="profile center">
-    <h1>Test</h1>
-</article>
-<?php require_once "components/common/footer.php"?>
+{{>components/common/head}}
+<body class="bg-primary">
+{{>components/common/header}}
+<div class="layout-container center">
+    <main class="profile-content">
+        <div class="posts">
+            {{#articles.items}}
+                {{>components/articles/article}}
+            {{/articles.items}}
+            {{^articles.items}}
+                {{>components/articles/not_found}}
+            {{/articles.items}}
+        </div>
+        <div class="pagination center">
+            {{#articles.pagination}}
+                {{>components/common/pagination}}
+            {{/articles.pagination}}
+        </div>
+    </main>
+    <aside class="widgets">
+        <div class="widget-container">
+            <div class="widget-title">Profile</div>
+            <div class="widget-body">
+                {{#widgets.profile}}
+                    {{>components/widgets/profile}}
+                {{/widgets.profile}}
+            </div>
+        </div>
+<!--        <div class="widget-container">-->
+<!--            <div class="widget-title">Last comments</div>-->
+<!--            <div class="widget-body">-->
+<!--                {{#widgets.last_comments}}-->
+<!--                    {{>components/widgets/last-comments}}-->
+<!--                {{/widgets.last_comments}}-->
+<!--            </div>-->
+<!--        </div>-->
+    </aside>
+</div>
+{{>components/common/footer}}
 </body>
 </html>

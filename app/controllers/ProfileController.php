@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\core\database\MysqlConfig;
 use app\core\exception\ApplicationException;
 use app\core\Router;
+use app\core\utils\pagination\Paginator;
 use app\helpers\ContextHelper;
 use domain\categories\CategoriesRepository;
 use domain\posts\PostsRepository;
@@ -35,11 +36,10 @@ class ProfileController
             $pdo = $mysql_conf->getPDO();
             $repo = UsersRepository::init($pdo);
             $categories_repo = CategoriesRepository::init($pdo);
-            $articles_repo = PostsRepository::init($pdo);
+            $posts_repo = PostsRepository::init($pdo);
 
             $categories = $categories_repo->findAll();
             $user = $repo->findById($id);
-            $user_articles = $articles_repo->findAll(["user_id" => $user->getId()]);
 
             if (empty($categories)) {
                 $header_context["nav"]["items"][] = [
@@ -69,6 +69,56 @@ class ProfileController
                         "display_name" => $category->getDisplayName(),
                     ];
                 }
+            }
+
+            $count_posts = $posts_repo->count(["user_id"=> $id]);
+            // Setup paginator
+            $paginator = new Paginator($count_posts);
+            $paginator->setPageNumberItems(10);
+            $paginator->resolve(isset($page) ? htmlspecialchars($page) : null);
+            // Current page number
+            $current_page = $paginator->getCurrentPage();
+            // Create pagination items
+            $articles_context["pagination"]["items"] = $paginator->generate(
+                Router::link("/users/$id", $_ENV["URL_PREFIX"])
+            );
+            // Get posts for page
+            $max_items_on_page = $paginator->getPageNumberItems();
+            $user_articles = $posts_repo->findAll(["user_id" => $user->getId()], [
+                "limit" => [
+                    "limit" => $max_items_on_page,
+                    "offset" => ($current_page) * $max_items_on_page
+                ]
+            ]);
+
+            // Set articles for page
+            if (!empty($user_articles)) {
+                $items = [];
+                foreach ($user_articles as $post) {
+                    $items[] = [
+                        "id" => $post->getId(),
+                        "title" => $post->getTitle(),
+                        "content" => $post->getContent(),
+                        "rating" => $post->getRating(),
+                        "count_saved" => $post->getCountSaved(),
+                        "user" => [
+                            "id" => $post->getUser()->getId(),
+                            "username" => $post->getUser()->getUserName(),
+                            "full_name" => $post->getUser()->getFullName(),
+                            "link" => Router::link("/users/" . $post->getUser()->getId(), $_ENV["URL_PREFIX"]),
+                            "avatar" => Router::link("/static/users/avatar1.ico", $_ENV["URL_PREFIX"])
+                        ],
+                        "date" => $post->getCreationDateTime(),
+                        "url" => Router::link("/articles/" . $post->getId(), $_ENV["URL_PREFIX"]),
+                        "assets_links" => [
+                            "like" => Router::link("/assets/images/like.svg", $_ENV["URL_PREFIX"]),
+                            "save" => Router::link("/assets/images/save.svg", $_ENV["URL_PREFIX"])
+                        ]
+                    ];
+                }
+                $articles_context["items"] = $items;
+            } else {
+                $articles_context["items"] = [];
             }
 
             $widgets_context["profile"] = [
