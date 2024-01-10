@@ -21,7 +21,8 @@ class AuthAPIController {
                 ]
             ]);
             http_response_code(400);
-            return $response_body->toJSON();
+            echo $response_body->toJSON();
+            return null;
         }
 
         // Check input values
@@ -36,7 +37,8 @@ class AuthAPIController {
         if(!empty($validation_errors)){
             $response_body->setErrors($validation_errors);
             http_response_code(400);
-            return $response_body->toJSON();
+            echo $response_body->toJSON();
+            return null;
         }
 
 //        $service = new UserService();
@@ -77,7 +79,8 @@ class AuthAPIController {
             ]);
             http_response_code($exception->getCode());
         }
-        return $response_body->toJSON();
+        echo $response_body->toJSON();
+        return null;
     }
 
     /**
@@ -144,6 +147,7 @@ class AuthAPIController {
             $response->setErrors([["message" => "User already logged out"]]);
             http_response_code(400);
         }
-        return $response->toJSON();
+        echo $response->toJSON();
+        return null;
     }
 }
