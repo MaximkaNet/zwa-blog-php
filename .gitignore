@@ -2,4 +2,6 @@ static/*
 .idea
 node_modules
 vendor/*
-!vendor/autoloader.php
+!vendor/maximkanet_autoloader.php
+public/.env
+composer.lock
