@@ -1,0 +1,12 @@
+<ul class="pagination-items">
+    {{#items}}
+        <li class="pagination-item{{#current}} current{{/current}}">
+            {{#link}}
+                <a href="{{link}}">{{content}}</a>
+            {{/link}}
+            {{^link}}
+                <span>{{content}}</span>
+            {{/link}}
+        </li>
+    {{/items}}
+</ul>

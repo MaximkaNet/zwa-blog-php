@@ -1,3 +1,51 @@
 <footer>
-    Footer
+    {{#footer}}
+        <div class="footer-sections container center">
+            {{#sections}}
+                <!-- Website info -->
+                <section>
+                    <div class="inner-container">
+                        <h2>About</h2>
+                        {{#about}}
+<!--                            <img class="logo" src="{{logo}}" alt="Logo image">-->
+                            <p class="about-website">{{content}}</p>
+                        {{/about}}
+                    </div>
+                </section>
+                <!-- Site map -->
+                <section>
+                    {{#categories}}
+                        <div class="inner-container">
+                            <h2>{{title}}</h2>
+                            <ul class="items">
+                                {{#items}}
+                                    <li>
+                                        <a href="{{link}}">{{display_name}}</a>
+                                    </li>
+                                {{/items}}
+                            </ul>
+                        </div>
+                    {{/categories}}
+                </section>
+                <!-- Socials -->
+                <section>
+                    <div class="inner-container">
+                        <h2>Socials</h2>
+                        <ul class="socials">
+                            {{#socials}}
+                                <li>
+                                    <a href="{{link}}" target="_blank">
+                                        <img src="{{image.src}}" alt="{{image.alter}}">
+                                    </a>
+                                </li>
+                            {{/socials}}
+                        </ul>
+                    </div>
+                </section>
+            {{/sections}}
+        </div>
+        <div class="copyright container center">
+            <span>{{copyright}}</span>
+        </div>
+    {{/footer}}
 </footer>
