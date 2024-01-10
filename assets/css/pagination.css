@@ -1,0 +1,25 @@
+.pagination-items {
+    width: min-content;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    gap: 20px;
+}
+.pagination-item {
+    border: 2px solid transparent;
+    border-radius: 5px;
+    display: flex;
+}
+
+.pagination-item:hover{
+    border-color: var(--third-color__hover);
+}
+
+.pagination-item a {
+    color: white;
+    text-decoration: none;
+    padding: 3px 7px;
+}
+.pagination-item.current{
+    border-color: var(--white-color);
+}

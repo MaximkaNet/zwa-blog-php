@@ -1,0 +1,19 @@
+.profile {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.profile img {
+    min-width: 64px;
+    max-width: 64px;
+}
+
+.profile-info {
+    color: var(--white-color);
+}
+
+.profile-info .role {
+    color: #9ddc6c;
+}

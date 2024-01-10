@@ -1,0 +1,12 @@
+.widget-container{
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: #0000003F 0 0 10px 0;
+    background-color: var(--secondary-color);
+}
+
+.widget-title {
+    color: var(--white-color);
+    font-size: 14pt;
+    margin-bottom: 5px;
+}

@@ -5,6 +5,9 @@
 @import "single.css";
 @import "profile.css";
 @import "pagination.css";
+@import "footer.css";
+@import "layout.css";
+@import "widget.css";
 /*@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');*/
 /* Reset css*/
 * {
@@ -21,8 +24,13 @@
     --third-color__hover: #EF745C;
     --white-color: #e0e0e0;
     --max-width: 1000px;
+    --sidebar-width: 300px;
 }
 
+body {
+    padding-left: 20px;
+    padding-right: 20px;
+}
 
 /* Containers */
 .container {
@@ -33,6 +41,10 @@
     --padding: 20px;
     max-width: calc(350px + var(--padding));
     padding: 0 var(--padding);
+}
+
+.content {
+    padding-top: 20px;
 }
 
 /* Buttons */
