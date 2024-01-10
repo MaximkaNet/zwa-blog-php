@@ -2,7 +2,7 @@
 
 namespace app\core\http;
 
-class ResponseBody
+class Response
 {
     private array|null $errors;
     private array|null $data;
