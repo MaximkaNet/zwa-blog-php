@@ -205,6 +205,11 @@ class Router
         $props = call_user_func($this->getRoute('/404', 'get')["callback"]);
         $view = new View("404");
         $view->setContext($props["context"] ?? []);
+        $view->addValuesToContext([
+            "head" => [
+                "title" => "Page not found"
+            ]
+        ]);
         return $view;
     }
 }
