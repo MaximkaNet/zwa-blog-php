@@ -4,6 +4,7 @@ namespace app\controllers\api;
 
 use app\core\exception\ApplicationException;
 use app\core\http\Response;
+use domain\users\UserException;
 use domain\users\UserService;
 
 class AuthAPIController
@@ -56,7 +57,7 @@ class AuthAPIController
             $_SESSION["user"]["role"] = $user->getRole();
             http_response_code(200);
             $response_body->setMessage("Login success");
-        } catch (ApplicationException $exception) {
+        } catch (UserException $exception) {
             $response_body->setErrors([["message" => $exception->getMessage()]]);
             $response_body->setData([
                 "user" => [
@@ -107,7 +108,7 @@ class AuthAPIController
             $user = $service->registration($email, $password, $first_name, $last_name);
             http_response_code(201);
             $response_body->setMessage("User is created");
-        } catch (ApplicationException $exception) {
+        } catch (UserException $exception) {
             $response_body->setErrors([
                 ["message" => "User already exists"]
             ]);
