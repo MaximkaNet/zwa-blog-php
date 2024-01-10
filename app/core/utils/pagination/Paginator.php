@@ -47,11 +47,10 @@ class Paginator
         // Get page number
         if (isset($page)) {
             if(is_integer($page)){
-                $this->current = $page;
+                $this->current = (int)($page);
             }
             else if(is_string($page)) {
-                $str_page = htmlspecialchars($page);
-                if (preg_match("/$pattern/", $str_page, $matches, PREG_OFFSET_CAPTURE)) {
+                if (preg_match("/$pattern/", $page, $matches, PREG_OFFSET_CAPTURE)) {
                     $this->current = $matches[1][0];
                     $this->current -= 1;
                     if ($this->current < 0) {
