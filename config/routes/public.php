@@ -1,17 +1,17 @@
 <?php
 
-use app\controllers\PublicController;
+use app\controllers\ArticlesController;
+use app\controllers\ProfileController;
+use app\controllers\SearchController;
+use app\controllers\SingleController;
 
-//$router->get('/', function () {
-//    $link = Router::link("/category/articles", Application::getRouter()->getPrefix());
-//    header("Location: " . $link, true, 301);
-//});
-$router->get('/category/articles/:page?', [PublicController::class, 'home']);
-//$router->get('/category/:name', function ($name) {
-//    header("Location: " . Router::link("/category/" . $name . "/articles", Application::getRouter()->getPrefix()));
-//});
-$router->get('/category/:name/articles/:page?', [PublicController::class, 'articlesByCategory']);
-$router->get('/articles/:id', [PublicController::class, 'single']);
-$router->get('/users/:id', [PublicController::class, 'userProfile']);
-$router->get('/search', [PublicController::class, 'search']);
+$router->get('/', [ArticlesController::class, 'redirectToAll']);
+$router->get('/category', [ArticlesController::class, 'redirectToAll']);
+$router->get('/category/articles/:page?', [ArticlesController::class, 'all']);
+$router->get('/category/:name', [ArticlesController::class, 'redirectToCategory']);
+$router->get('/category/:name/articles/:page?', [ArticlesController::class, 'category']);
+$router->get('/articles/:id', [SingleController::class, 'single']);
+$router->get('/users/:id', [ProfileController::class, 'withArticles']);
+$router->get('/users/:id/:page?', [ProfileController::class, 'withArticles']);
+$router->get('/search', [SearchController::class, 'search']);
 
