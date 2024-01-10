@@ -22,7 +22,7 @@ class AuthController
                 "auth" => [
                     "class_list" => "bg-primary",
                     "scripts" => [
-                        "auth" => Router::link("/assets/js/auth.js")
+                        "auth" => Router::link("/assets/js/auth.js", $_ENV["URL_PREFIX"])
                     ]
                 ],
             ];
@@ -32,23 +32,23 @@ class AuthController
                         "email" => $_SESSION["user"]["email"]
                     ],
                     "logo" => [
-                        "link" => Router::link("/assets/images/logo.svg")
+                        "link" => Router::link("/assets/images/logo.svg", $_ENV["URL_PREFIX"])
                     ],
                     "continue" => [
-                        "link" => Router::link("/")
+                        "link" => Router::link("/", $_ENV["URL_PREFIX"])
                     ]
                 ];
             } else {
                 $context["auth"]["login"] = [
                     "logo" => [
-                        "link" => Router::link("/assets/images/logo.svg")
+                        "link" => Router::link("/assets/images/logo.svg", $_ENV["URL_PREFIX"])
                     ],
                     "images" => [
-                        "email" => Router::link("/assets/images/email.svg"),
-                        "password" => Router::link("/assets/images/password.svg")
+                        "email" => Router::link("/assets/images/email.svg", $_ENV["URL_PREFIX"]),
+                        "password" => Router::link("/assets/images/password.svg", $_ENV["URL_PREFIX"])
                     ],
                     "links" => [
-                        "signup" => Router::link("/signup")
+                        "signup" => Router::link("/signup", $_ENV["URL_PREFIX"])
                     ]
                 ];
             }
@@ -73,20 +73,20 @@ class AuthController
                 "auth" => [
                     "class_list" => "bg-gradient full-size",
                     "scripts" => [
-                        "auth" => Router::link("/assets/js/auth.js")
+                        "auth" => Router::link("/assets/js/auth.js", $_ENV["URL_PREFIX"])
                     ]
                 ],
             ];
             $context["auth"]["signup"] = [
                 "logo" => [
-                    "link" => Router::link("/assets/images/logo.svg")
+                    "link" => Router::link("/assets/images/logo.svg", $_ENV["URL_PREFIX"])
                 ],
                 "images" => [
-                    "email" => Router::link("/assets/images/email.svg"),
-                    "password" => Router::link("/assets/images/password.svg")
+                    "email" => Router::link("/assets/images/email.svg", $_ENV["URL_PREFIX"]),
+                    "password" => Router::link("/assets/images/password.svg", $_ENV["URL_PREFIX"])
                 ],
                 "links" => [
-                    "login" => Router::link("/login")
+                    "login" => Router::link("/login", $_ENV["URL_PREFIX"])
                 ]
             ];
             return ["template" => "auth", "context" => $context];
@@ -104,7 +104,7 @@ class AuthController
     {
         try {
             if(empty($_SESSION["user"])) {
-                $to_login = Router::link("/login");
+                $to_login = Router::link("/login", $_ENV["URL_PREFIX"]);
                 header("Location: $to_login", true, 301);
                 return [];
             }
@@ -115,16 +115,16 @@ class AuthController
                 "auth" => [
                     "class_list" => "bg-primary",
                     "scripts" => [
-                        "auth" => Router::link("/assets/js/auth.js")
+                        "auth" => Router::link("/assets/js/auth.js", $_ENV["URL_PREFIX"])
                     ]
                 ]
             ];
             $context["auth"]["logout"] = [
                 "logo" => [
-                    "link" => Router::link("/assets/images/logo.svg")
+                    "link" => Router::link("/assets/images/logo.svg", $_ENV["URL_PREFIX"])
                 ],
                 "links" => [
-                    "home" =>  Router::link("/category/articles")
+                    "home" =>  Router::link("/category/articles", $_ENV["URL_PREFIX"])
                 ]
             ];
             return ["template" => "auth", "context" => $context];
