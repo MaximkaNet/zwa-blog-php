@@ -1,6 +1,4 @@
-import {PREFIX} from "./constants.js";
-
-const API_URL_V1 = "http://zwa-blog/api/v1";
+import {PREFIX, API_URL_V1} from "./constants.js";
 
 const loginForm = document.getElementById("login_form");
 const signupForm = document.getElementById("signup_form");
