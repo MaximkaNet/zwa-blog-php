@@ -2,7 +2,6 @@
 
 namespace app\core\document;
 
-use app\core\exception\DocumentElementException;
 use app\core\interfaces\IDocumentElementFactory;
 
 class DocumentElement implements IDocumentElementFactory
