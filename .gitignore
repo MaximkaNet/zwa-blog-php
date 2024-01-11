@@ -3,5 +3,5 @@ static/*
 node_modules
 vendor/*
 !vendor/maximkanet_autoloader.php
-public/.env
+.env
 composer.lock
