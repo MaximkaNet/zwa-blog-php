@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="{{app.lang}}">
+{{>components/common/head}}
+<body class="body-admin">
+{{#admin}}
+    {{#menu}}
+        {{>admin/common/mobile-menu}}
+    {{/menu}}
+    <div class="admin-layout">
+        {{#menu}}
+            {{>admin/common/menu}}
+        {{/menu}}
+        <main>
+            {{#header}}
+                {{>admin/common/header}}
+            {{/header}}
+            <div class="posts">
+                {{#items}}
+                    <div class="posts-item"></div>
+                {{/items}}
+                {{^items}}
+                    <div class="posts-item">Posts not found</div>
+                {{/items}}
+            </div>
+        </main>
+    </div>
+{{/admin}}
+</body>
+</html>
