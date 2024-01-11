@@ -52,7 +52,7 @@ class PostsRepository implements IRepositoryFactory
 
     public static function init(PDO $pdo): self
     {
-        if(empty(self::$instance)){
+        if (empty(self::$instance)) {
             self::$instance = new self($pdo);
         }
         return self::$instance;
@@ -65,8 +65,9 @@ class PostsRepository implements IRepositoryFactory
 
     public static function getRepository(): self
     {
-        if(empty(self::$instance))
+        if (empty(self::$instance)) {
             throw new RepositoryException("Repository uninitialized");
+        }
         return self::$instance;
     }
 
@@ -93,9 +94,10 @@ class PostsRepository implements IRepositoryFactory
         $query = "SELECT COUNT(*) as `count` FROM `$table_name`";
         if (isset($filter["category_id"])) {
             $query .= " WHERE `category_id` = :category_id";
-        }
-        else if(isset($filter["user_id"])){
-            $query .= " WHERE `user_id` = :user_id";
+        } else {
+            if (isset($filter["user_id"])) {
+                $query .= " WHERE `user_id` = :user_id";
+            }
         }
         $stmt = $this->pdo->prepare($query);
         if (isset($filter["category_id"])) {
@@ -116,8 +118,9 @@ class PostsRepository implements IRepositoryFactory
     function findById(mixed $id): ?Post
     {
         $result = $this->findAll(["posts" => ["id" => $id]], ["limit" => ["limit" => 1]]);
-        if(isset($result))
+        if (isset($result)) {
             return $result[0];
+        }
         return null;
     }
 
@@ -127,8 +130,9 @@ class PostsRepository implements IRepositoryFactory
     function findOne(array $where = null): ?Post
     {
         $result = $this->findAll($where, ["limit" => ["limit" => 1]]);
-        if(isset($result))
+        if (isset($result)) {
             return $result[0];
+        }
         return null;
     }
 
@@ -205,8 +209,18 @@ class PostsRepository implements IRepositoryFactory
 
     function create(array $values): int
     {
-        // TODO: Implement create() method.
-        return 0;
+        $qb = new QueryBuilder();
+        $qb->insertInto(self::$table_name, $values);
+        $stmt = $this->pdo->prepare($qb->getSQL());
+        $values_to_bind = $qb->getParamsWithValuesWithTypes();
+        if (isset($values_to_bind)) {
+            foreach ($values_to_bind as $param => ["type" => $type, "value" => $value]) {
+                $stmt->bindValue($param, $value, $type);
+            }
+        }
+        $stmt->execute();
+        $stmt->closeCursor();
+        return $this->pdo->lastInsertId();
     }
 
     function update(array $values, array $where = null): void
