@@ -1,66 +1,56 @@
-<?php
-use app\app\core\Application;
-use app\app\core\Router;
-
-$router = Application::getRouter();
-?>
 <!doctype html>
-<html lang="en">
-<?php require_once "components/common/head.php"; ?>
-<body class="main-body">
-<?php require_once "components/common/header.php"; ?>
-<?php if(isset($post)): ?>
-<article class="single post" id="post-<?= $post->getId(); ?>">
+<html lang="{{app.lang}}">
+{{>components/common/head}}
+<body class="bg-primary">
+{{>components/common/header}}
+{{#single}}
+<article class="single post" id="post-{{id}}">
     <section class="post-header">
-        <?php
-        $user_link = Router::link("/users/" . $post->getUser()->getId(), $router->getPrefix())
-        ?>
-        <a href="<?= $user_link ?>">
+        <a href="{{user.link}}">
             <img
-                src="<?= Router::link("static/users/avatar1.ico", $router->getPrefix()); ?>"
+                src="{{user.avatar.src}}"
                 alt="User icon"
                 class="user-avatar"
             >
         </a>
         <div>
-            <a href="<?= $user_link ?>" class="link-white"><?= $post->getUser()->getFirstName(); ?></a>
-            <span class="post-date"><?= "19.11.2023" ?></span>
+            <a href="{{user.link}}" class="link-white">{{user.full_name}}</a>
+            <span class="post-date">{{date}}</span>
         </div>
     </section>
     <section class="post-body">
-        <?php $post_url = Router::link("/articles/" . $post->getId(), $router->getPrefix()); ?>
         <h1 class="post-title">
-            <a
-                href="<?= $post_url; ?>"
-                class="link-white">
-                <?= $post->getTitle(); ?>
-            </a>
+            {{title}}
         </h1>
         <div class="post-content">
-            <?= $post->getContent(); ?>
+            {{#content}}{{.}}{{/content}}
+            {{^content}}Content is not provided{{/content}}
+            <!-- Insert html from database or generate, but  -->
+            <!-- context must have 'sections' means render by sections. -->
         </div>
     </section>
     <section class="post-footer">
         <div
             class="post-footer-option"
-            data-post-id="<?= $post->getId(); ?>"
+            data-post-id="{{id}}"
             data-action="like"
         >
-            <img class="option-img" src="<?= Router::link("assets/images/like.svg", $router->getPrefix()); ?>" alt="like">
-            <span><?= $post->getRating() ?? 0; ?></span>
+            <img class="option-img" src="{{asset_links.like}}" alt="like">
+            <span>{{rating}}</span>
         </div>
         <div
             class="post-footer-option"
-            data-post-id="<?= $post->getId(); ?>"
+            data-post-id="{{id}}"
             data-action="save"
         >
-            <img class="option-img" src="<?= Router::link("assets/images/save.svg", $router->getPrefix()); ?>" alt="save">
-            <span><?= $post->getCountSaved() ?? 0; ?></span>
+            <img class="option-img" src="{{asset_links.save}}" alt="save">
+            <span>{{count_saved}}</span>
         </div>
     </section>
 </article>
-<?php else: ?>
+{{/single}}
+{{^single}}
 <div style="color: white">Post not found</div>
-<?php endif; ?>
+{{/single}}
 </body>
 </html>

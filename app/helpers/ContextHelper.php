@@ -6,11 +6,43 @@ use app\core\Router;
 
 class ContextHelper
 {
+    /**
+     * Init all contexts
+     * @return array
+     */
     public static function initContext(): array
     {
-        $head_context = [
+        $head_context = self::headContext();
+        $header_context = self::headerContext();
+        $articles_context = self::articlesContext();
+        $widgets_context = self::widgetsContext();
+        $footer_context = self::footerContext();
+        return [
+            "head" => $head_context,
+            "header" => $header_context,
+            "articles" => $articles_context,
+            "widgets" => $widgets_context,
+            "footer" => $footer_context
+        ];
+    }
+
+    /**
+     * Head context
+     * @return string[]
+     */
+    public static function headContext(): array
+    {
+        return [
             "title" => "All posts"
         ];
+    }
+
+    /**
+     * Header context
+     * @return array
+     */
+    public static function headerContext(): array
+    {
         $header_context = [
             "nav" => [
                 "items" => []
@@ -20,14 +52,42 @@ class ContextHelper
                 "link" => Router::link("/category/articles", $_ENV["URL_PREFIX"])
             ]
         ];
-        $articles_context = [
+        // Check auth status
+        $authorized = $_SESSION["user"]["is_auth"] ?? false;
+        $header_context["auth"] = self::authHeaderLinks($authorized);
+        return $header_context;
+    }
+
+    /**
+     * Articles context
+     * @return array
+     */
+    public static function articlesContext(): array
+    {
+        return [
             "items" => [],
             "pagination" => [
                 "items" => []
             ]
         ];
-        $widgets_context = [];
-        $footer_context = [
+    }
+
+    /**
+     * Widgets context
+     * @return array
+     */
+    public static function widgetsContext(): array
+    {
+        return [];
+    }
+
+    /**
+     * Footer context
+     * @return array
+     */
+    public static function footerContext(): array
+    {
+        $footer_context =  [
             "copyright" => "CodeHub | 2024",
             "sections" => [
                 "about" => [
@@ -41,14 +101,35 @@ class ContextHelper
                 "socials" => []
             ],
         ];
+        $footer_context["sections"]["socials"] = self::socialsContext();
+
+        return $footer_context;
+    }
+
+    /**
+     * Context to single article
+     * @return array
+     */
+    public static function singleContext(): array
+    {
+        return [];
+    }
+
+    /**
+     * Context for footer social links
+     * @return array
+     */
+    public static function socialsContext(): array
+    {
         $socials = [
             "instagram" => "#",
             "youtube" => "#",
             "twitter" => "#",
             "telegram" => "#"
         ];
+        $socials_context = [];
         foreach ($socials as $social => $link) {
-            $footer_context["sections"]["socials"][] = [
+            $socials_context[] = [
                 "link" => $link,
                 "image" => [
                     "src" => Router::link("/assets/images/socials/$social.png", $_ENV["URL_PREFIX"]),
@@ -56,28 +137,28 @@ class ContextHelper
                 ]
             ];
         }
-        // Check auth status
-        $authorized = $_SESSION["user"]["is_auth"] ?? false;
+        return $socials_context;
+    }
+
+    /**
+     * Context for header links
+     * @param bool $authorized
+     * @return array[]
+     */
+    public static function authHeaderLinks(bool $authorized = false): array
+    {
         if ($authorized) {
-            $header_context["auth"] = [
+            return [
                 "authorized" => [
                     "admin_link" => Router::link("/admin", $_ENV["URL_PREFIX"])
                 ]
             ];
-        } else {
-            $header_context["auth"] = [
-                "unauthorized" => [
-                    "login_link" => Router::link("/login", $_ENV["URL_PREFIX"]),
-                    "signup_link" => Router::link("/signup", $_ENV["URL_PREFIX"]),
-                ]
-            ];
         }
         return [
-            "head" => $head_context,
-            "header" => $header_context,
-            "articles" => $articles_context,
-            "widgets" => $widgets_context,
-            "footer" => $footer_context
+            "unauthorized" => [
+                "login_link" => Router::link("/login", $_ENV["URL_PREFIX"]),
+                "signup_link" => Router::link("/signup", $_ENV["URL_PREFIX"]),
+            ]
         ];
     }
 }
