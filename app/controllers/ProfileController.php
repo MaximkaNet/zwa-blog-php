@@ -23,13 +23,12 @@ class ProfileController
     public static function withArticles(int $id, string $page = null): array
     {
         try {
-            $context = ContextHelper::initContext();
             // Context parts
-            $head_context = $context["head"];
-            $header_context = $context["header"];
-            $articles_context = $context["articles"];
-            $widgets_context = $context["widgets"];
-            $footer_context = $context["footer"];
+            $head_context = ContextHelper::headContext();
+            $header_context = ContextHelper::headerContext();
+            $articles_context = ContextHelper::articlesContext();
+            $widgets_context = ContextHelper::widgetsContext();
+            $footer_context = ContextHelper::footerContext();
             $head_context["title"] = "User profile";
             // Get user
             $mysql_conf = new MysqlConfig($_ENV["DB_HOST"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
