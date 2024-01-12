@@ -14,14 +14,18 @@
             {{#header}}
                 {{>admin/common/header}}
             {{/header}}
-            <div class="posts">
-                {{#items}}
-                    <div class="posts-item"></div>
-                {{/items}}
-                {{^items}}
-                    <div class="posts-item">Posts not found</div>
-                {{/items}}
-            </div>
+            {{#body}}
+                <div class="admin-body">
+                    <div class="posts">
+                        {{#items}}
+                            <div class="posts-item"></div>
+                        {{/items}}
+                        {{^items}}
+                            <div class="posts-item">Posts not found</div>
+                        {{/items}}
+                    </div>
+                </div>
+            {{/body}}
         </main>
     </div>
 {{/admin}}
