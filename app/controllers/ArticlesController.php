@@ -9,6 +9,7 @@ use app\core\utils\pagination\Paginator;
 use app\helpers\ContextHelper;
 use domain\categories\CategoriesRepository;
 use domain\posts\PostsRepository;
+use domain\posts\PostStatus;
 
 class ArticlesController
 {
@@ -39,7 +40,7 @@ class ArticlesController
      * @return array
      * @throws ApplicationException
      */
-    public static function all(string $page = null):array
+    public static function all(string $page = null): array
     {
         try {
             $context = ContextHelper::initContext();
