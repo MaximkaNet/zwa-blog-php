@@ -161,4 +161,31 @@ class ContextHelper
             ]
         ];
     }
+
+    public static function adminContext(): array
+    {
+        $context = [];
+
+        $context["menu"] = [
+            "logo" => [
+                "link" => Router::link("/admin", $_ENV["URL_PREFIX"]),
+                "src" => Router::link("/assets/images/logo-admin.svg", $_ENV["URL_PREFIX"]),
+            ],
+            "links" => [
+                "posts" => Router::link("/admin", $_ENV["URL_PREFIX"]),
+                "profile" => Router::link("/admin/profile", $_ENV["URL_PREFIX"]),
+                "home" => Router::link("/", $_ENV["URL_PREFIX"]),
+                "logout" => Router::link("/logout", $_ENV["URL_PREFIX"]),
+            ]
+        ];
+
+        return $context;
+    }
+
+    public static function adminHeaderContext(): array
+    {
+        $context = [];
+
+        return $context;
+    }
 }
