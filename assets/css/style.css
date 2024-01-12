@@ -9,12 +9,13 @@
 @import "layout.css";
 @import "widget.css";
 @import "admin/layout.css";
+@import "admin/profile.css";
 /*@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');*/
 /* Reset css*/
 * {
     margin: 0;
     padding: 0;
-    border:0;
+    border: 0;
     /*font-family: 'Inter', 'sans-serif';*/
     font-family: 'Calibri', 'sans-serif';
     box-sizing: border-box;
@@ -54,6 +55,51 @@ body {
     padding-top: 20px;
 }
 
+.admin-body {
+    padding: 30px;
+}
+
+.messages-container {
+    position: absolute;
+    z-index: 999;
+    right: 0;
+    bottom: 0;
+    padding: 0 10px;
+    padding-bottom: 10px;
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+}
+
+.message-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 15px;
+    padding: 15px 20px;
+    transition: opacity 1.5s;
+}
+
+.message-item.error {
+    background-color: #C52B2B;
+}
+
+.message-item.success {
+    background-color: #66C047;
+
+}
+
+.message-item img {
+    max-width: 24px;
+}
+
+.message-item span {
+    color: var(--white-color);
+}
+
 /* Buttons */
 
 .primary-btn {
@@ -90,6 +136,7 @@ body {
     color: white;
     user-select: none;
 }
+
 .link-white:hover {
     color: var(--third-color);
 }
@@ -99,6 +146,7 @@ body {
     color: var(--third-color);
     user-select: none;
 }
+
 .link-orange:hover {
     color: #c9604d;
 }

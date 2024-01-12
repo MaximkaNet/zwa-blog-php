@@ -10,6 +10,24 @@
     padding: 20px;
 }
 
+.admin-layout main {
+    flex-basis: calc(100% - var(--sidebar-admin-width));
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-layout header {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--secondary-color);
+}
+
+.admin-layout header h1 {
+    color: var(--white-color);
+}
+
 .sidebar .logo-container{
     margin-bottom: 15px;
 }

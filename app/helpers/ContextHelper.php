@@ -188,4 +188,11 @@ class ContextHelper
 
         return $context;
     }
+
+    public static function adminBodyContext(): array
+    {
+        $context = [];
+
+        return $context;
+    }
 }

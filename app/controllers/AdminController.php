@@ -8,6 +8,7 @@ use app\helpers\ContextHelper;
 use domain\categories\CategoriesRepository;
 use domain\posts\PostsService;
 use domain\users\UserRole;
+use domain\users\UsersRepository;
 
 class AdminController
 {
@@ -21,7 +22,7 @@ class AdminController
             return [];
         }
 
-        if($_SESSION["user"]["role"] === UserRole::USER){
+        if ($_SESSION["user"]["role"] === UserRole::USER) {
             header("Location: " . Router::link("/admin/profile", $_ENV["URL_PREFIX"]));
             return [];
         }
@@ -30,35 +31,91 @@ class AdminController
         $head_context["title"] = "My posts";
         $admin_context = ContextHelper::adminContext();
         $header_context = ContextHelper::adminHeaderContext();
-
-        $admin_context["menu"] = [
-            "logo" => [
-                "link" => Router::link("/admin", $_ENV["URL_PREFIX"]),
-                "src" => Router::link("/assets/images/logo-admin.svg", $_ENV["URL_PREFIX"]),
-            ],
-            "links" => [
-                "posts" => Router::link("/admin", $_ENV["URL_PREFIX"]),
-                "profile" => Router::link("/admin/profile", $_ENV["URL_PREFIX"]),
-                "home" => Router::link("/", $_ENV["URL_PREFIX"]),
-                "logout" => Router::link("/logout", $_ENV["URL_PREFIX"]),
-            ]
-        ];
+        $body_context = ContextHelper::adminBodyContext();
 
         $header_context["title"] = "My posts";
         $header_context["write_post_btn"] = [
             "link" => Router::link("/admin/article", $_ENV["URL_PREFIX"])
         ];
 
+        $body_context["items"] = [];
+
         $admin_context["header"] = $header_context;
-        return ["template" => "admin/my_posts", "context" => [
-            "head" => $head_context,
-            "admin" => $admin_context
-        ]];
+        $admin_context["body"] = $body_context;
+        return [
+            "template" => "admin/my_posts",
+            "context" => [
+                "head" => $head_context,
+                "admin" => $admin_context
+            ]
+        ];
     }
 
     public static function profile(): array
     {
-        return [];
+        if (empty($_SESSION["user"])) {
+            header("Location: " . Router::link("/login", $_ENV["URL_PREFIX"]));
+            return [];
+        }
+
+        $head_context = ContextHelper::headContext();
+        $head_context["title"] = "Profile";
+        $admin_context = ContextHelper::adminContext();
+        $header_context = ContextHelper::adminHeaderContext();
+        $body_context = ContextHelper::adminBodyContext();
+
+        $header_context["title"] = "Profile";
+        if ($_SESSION["user"]["role"] === UserRole::ADMIN) {
+            $header_context["write_post_btn"] = [
+                "link" => Router::link("/admin/article", $_ENV["URL_PREFIX"])
+            ];
+        }
+
+        $body_context["images"] = [
+            "edit" => [
+                "src" => Router::link("/assets/images/pen.png", $_ENV["URL_PREFIX"])
+            ]
+        ];
+
+        $config = new MysqlConfig($_ENV["DB_HOST"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
+        $user_repo = UsersRepository::init($config->getPDO());
+        $user = $user_repo->findById($_SESSION["user"]["id"]);
+        $body_context["info"] = [
+            "id" => $user->getId(),
+            "position" => htmlspecialchars($user->getRole()),
+            "username" => htmlspecialchars($user->getUserName()),
+            "email" => htmlspecialchars($user->getEmail()),
+            "first_name" => htmlspecialchars($user->getFirstName()),
+            "last_name" => htmlspecialchars($user->getLastName()),
+        ];
+        $avatar = $user->getAvatar();
+        if ($avatar) {
+            $body_context["info"]["avatar"]["src"] = Router::link(
+                "/static/users/" . htmlspecialchars($avatar),
+                $_ENV["URL_PREFIX"]
+            );
+            $body_context["info"]["avatar"]["file_name"] = htmlspecialchars($avatar);
+        } else {
+            $body_context["info"]["avatar"]["src"] = Router::link(
+                "/assets/images/default_avatar.png",
+                $_ENV["URL_PREFIX"]
+            );
+            $body_context["info"]["avatar"]["file_name"] = "Avatar not uploaded yet";
+        }
+
+        $admin_context["header"] = $header_context;
+        $admin_context["body"] = $body_context;
+
+        $admin_context["scripts"] = [
+            ["src" => Router::link("/assets/js/edit-profile.js", $_ENV["URL_PREFIX"])],
+        ];
+        return [
+            "template" => "admin/profile",
+            "context" => [
+                "head" => $head_context,
+                "admin" => $admin_context
+            ]
+        ];
     }
 
     public static function createArticle(): array
@@ -86,7 +143,7 @@ class AdminController
         }
         $service = PostsService::get();
         $available_for_user = $service->checkArticleAccess($article_id, $_SESSION["user"]["id"]);
-        if(!$available_for_user) {
+        if (!$available_for_user) {
             header("Location: " . Router::link("/admin", $_ENV["URL_PREFIX"]));
         }
         echo "Edit article";

@@ -1,0 +1,47 @@
+.admin-layout .profile {
+    width: auto;
+    overflow: auto;
+    flex-basis: auto;
+}
+
+.profile .row {
+    width: 100%;
+    display: flex;
+}
+
+.profile .user-info {
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.user-info span {
+    color: var(--white-color);
+}
+
+.user-info .input-container {
+    display: flex;
+}
+
+.user-info input[type="text"] {
+    outline: none;
+    background: none;
+    color: var(--white-color);
+    font-size: 12pt;
+}
+
+.avatar-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.edit-icon {
+    max-width: 20px;
+    cursor: pointer;
+}
+#avatar-file_name {
+    color: var(--white-color);
+}
