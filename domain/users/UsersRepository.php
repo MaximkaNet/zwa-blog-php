@@ -199,8 +199,7 @@ class UsersRepository implements IRepositoryFactory
                 $stmt->bindValue($param, $value, $type);
             }
         }
-        $res = $stmt->execute();
-        var_dump($res, $query);
+        $stmt->execute();
         $stmt->closeCursor();
     }
 

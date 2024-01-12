@@ -69,6 +69,36 @@ class User implements IUser
         $this->full_name = $full_name;
     }
 
+    public function getFirstName(): ?string
+    {
+        if (isset($this->full_name)) {
+            return explode(" ", $this->full_name)[0];
+        }
+        return null;
+    }
+
+    public function getLastName(): ?string
+    {
+        if (isset($this->full_name)) {
+            return explode(" ", $this->full_name)[1] ?? null;
+        }
+        return null;
+    }
+
+    public function setFirstName(string $first_name): void
+    {
+        if(empty($first_name)) return;
+        $last_name = explode(" ", $this->full_name)[1] ?? "";
+        $this->full_name = implode(" ", [$first_name, $last_name]);
+    }
+
+    public function setLastName(string $last_name): void
+    {
+        if(empty($last_name)) return;
+        $first_name = explode(" ", $this->full_name)[0];
+        $this->full_name = implode(" ", [$first_name, $last_name]);
+    }
+
     public function getEmail(): ?string
     {
         return $this->email ?? null;
