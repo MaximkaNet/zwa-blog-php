@@ -114,7 +114,7 @@ class UserService
             if(file_exists($prev_avatar)){
                 unlink($prev_avatar);
             }
-            $uploads_path = Router::link("/static/users", $_ENV["URL_PREFIX"]);
+            $uploads_path = "/static/users";
             if(!$avatar->moveTo($uploads_path)) {
                 throw new UserException("File not uploaded");
             }
