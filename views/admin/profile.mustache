@@ -16,25 +16,28 @@
             {{/header}}
             {{#body}}
                 <div class="admin-body">
-                    <div class="profile">
+                    <form id="profile-form" class="profile" method="post" enctype="multipart/form-data">
                         <div class="row">
                             <div class="user-info">
+                                <label for="user_id">
+                                    <input id="user_id" name="id" type="text" value="{{info.id}}" hidden>
+                                </label>
                                 <span>Position: {{info.position}}</span>
                                 <span>Username: {{info.username}}</span>
                                 <span>Email: {{info.email}}</span>
                                 <label for="first_name" class="input-container">
                                     <input id="first_name"
+                                           name="first_name"
                                            type="text"
                                            value="{{info.first_name}}"
-                                           data-user-id="{{info.id}}"
                                            readonly>
                                     <img id="edit-first-name" class="edit-icon" src="{{images.edit.src}}" alt="edit">
                                 </label>
                                 <label for="last_name" class="input-container">
                                     <input id="last_name"
+                                           name="last_name"
                                            type="text"
                                            value="{{info.last_name}}"
-                                           data-user-id="{{info.id}}"
                                            readonly>
                                     <img id="edit-last-name"
                                          class="edit-icon"
@@ -42,18 +45,19 @@
                                          alt="edit">
                                 </label>
                             </div>
-                            <form method="post" id="avatar-form">
-                                <div class="avatar-container">
+                            <div class="avatar-container">
+                                <div>
                                     <img src="{{info.avatar.src}}" alt="avatar" id="avatar">
                                     <label for="avatar-file">
                                         <img src="{{images.edit.src}}" alt="edit" class="edit-icon">
-                                        <input type="file" id="avatar-file" hidden>
+                                        <input type="file" id="avatar-file" name="avatar" hidden>
                                     </label>
                                 </div>
                                 <span id="avatar-file_name">{{info.avatar.file_name}}</span>
-                            </form>
+                            </div>
                         </div>
-                    </div>
+                        <button id="submitter">Sava changes</button>
+                    </form>
                 </div>
             {{/body}}
         </main>

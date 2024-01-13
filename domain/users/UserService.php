@@ -3,8 +3,10 @@
 namespace domain\users;
 
 use app\core\database\MysqlConfig;
+use app\core\exception\RequestException;
 use app\core\http\UploadedFile;
 use app\core\Application;
+use app\core\Router;
 
 /**
  * The service for User entity
@@ -97,7 +99,7 @@ class UserService
      * @return User
      * @throws UserException
      */
-    public function changeAvatar(int $id, UploadedFile $avatar): user
+    public function changeAvatar(int $id, UploadedFile $avatar): User
     {
         $config = new MysqlConfig($_ENV["DB_HOST"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
         $repo = UsersRepository::init($config->getPDO());
@@ -106,13 +108,26 @@ class UserService
         // If not exists throw exception
         if(!$user) throw UserException::NotFound("User not found");
         // Save uploaded file to storage
-        $uploads_path = $_SERVER["DOCUMENT_ROOT"] . "/static/users";
-        $avatar->moveTo($uploads_path);
-        // Set user avatar
-        $user->setAvatar($avatar->getName());
-        // Update user avatar in database
-        $repo->update(["avatar" => $user->getAvatar()], ["id" => $id]);
-        return $user;
+        try {
+
+            $prev_avatar = __DIR__ . "/../../static/users/" . $user->getAvatar();
+            if(file_exists($prev_avatar)){
+                unlink($prev_avatar);
+            }
+            $uploads_path = Router::link("/static/users", $_ENV["URL_PREFIX"]);
+            if(!$avatar->moveTo($uploads_path)) {
+                throw new UserException("File not uploaded");
+            }
+            // Set user avatar
+            $user->setAvatar($avatar->getName() .".". $avatar->getType());
+            // Update user avatar in database
+            $repo->update(["avatar" => $user->getAvatar()], ["id" => $id]);
+            return $user;
+        } catch (RequestException $e){
+            throw new UserException($e->getMessage(), $e->getCode());
+        } catch (UserException $e) {
+            throw $e;
+        }
     }
 
     /**

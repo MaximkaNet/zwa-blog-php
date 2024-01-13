@@ -92,19 +92,21 @@ class PostsRepository implements IRepositoryFactory
     {
         $table_name = self::$table_name;
         $query = "SELECT COUNT(*) as `count` FROM `$table_name`";
+        $where = [];
         if (isset($filter["category_id"])) {
             $query .= " WHERE `category_id` = :category_id";
-        } else {
-            if (isset($filter["user_id"])) {
-                $query .= " WHERE `user_id` = :user_id";
-            }
+        } elseif (isset($filter["user_id"])) {
+            $query .= " WHERE `user_id` = :user_id";
+        } elseif (isset($filter["status"])) {
+            $query .= " WHERE `status` = :status";
         }
         $stmt = $this->pdo->prepare($query);
         if (isset($filter["category_id"])) {
             $stmt->bindValue("category_id", $filter["category_id"], PDO::PARAM_INT);
-        }
-        if (isset($filter["user_id"])) {
+        } elseif (isset($filter["user_id"])) {
             $stmt->bindValue("user_id", $filter["user_id"], PDO::PARAM_INT);
+        } elseif (isset($filter["status"])) {
+            $stmt->bindValue("status", $filter["status"]);
         }
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

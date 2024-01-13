@@ -22,10 +22,11 @@ class UploadedFile implements IUploadedFile
         int $error
     )
     {
+        preg_match("/(?<name>[a-zA-Z]+)\/(?<type>[a-zA-Z]+)/", $type, $matches);
         $this->error = $error;
-        $this->name = $name;
+        $this->name = UUID::v4();
         $this->size = $size;
-        $this->type = $type;
+        $this->type = strtolower($matches["type"] ?? "png");
         $this->tmp_path = $tmp_name;
     }
 
@@ -86,13 +87,15 @@ class UploadedFile implements IUploadedFile
                     UPLOAD_ERR_PARTIAL => "Upload file partial",
                     UPLOAD_ERR_FORM_SIZE => "Upload file form size",
                     UPLOAD_ERR_INI_SIZE => "Upload file ini size",
+                    UPLOAD_ERR_NO_FILE => "No file",
+                    default => "Unknown Exception: ". $this->error
                 },
                 400 // Bad request
             );
         }
 
         $project_root = __DIR__ . "/../../..";
-        $full_path = $project_root . $dist . "/" . $this->name . $this->type;
+        $full_path = $project_root . $dist . "/" . $this->name . "." . $this->type;
         return move_uploaded_file($this->tmp_path, $full_path);
     }
 }

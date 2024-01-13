@@ -1,9 +1,46 @@
 import {API_URL_V1, PREFIX} from "./constants.js";
 
+const profileForm = document.querySelector("#profile-form");
+
 const editFirstNameBtn = document.querySelector("#edit-first-name");
 const firstNameField = document.querySelector("#first_name");
 const editLastNameBtn = document.querySelector("#edit-last-name");
 const lastNameField = document.querySelector("#last_name");
+
+async function submitForm(e) {
+    e.preventDefault();
+    // Send data
+    const user_id = document.querySelector("#user_id").value;
+    const fetchOptions = {
+        "method": "POST",
+        "body": new FormData(e.target)
+    };
+    const response = await fetch(API_URL_V1 + "/users/" + user_id + "/edit", fetchOptions);
+    const {errors, message, data} = await response.json();
+    if (errors.length !== 0) {
+        renderMessage("error", errors[0].message);
+    } else {
+        renderMessage("success", message);
+    }
+    if(data != null) {
+        // profileForm.reset();
+        if (data.avatar != undefined) {
+            document.querySelector("#avatar")
+                .setAttribute("src", PREFIX + "/static/users/" + data.avatar);
+            document.querySelector("#avatar-file_name").innerText = data.avatar;
+        }
+        if (data.first_name != undefined) {
+            firstNameField.value = data.first_name;
+        }
+        if (data.last_name != undefined) {
+            firstNameField.value = data.last_name;
+        }
+    }
+}
+
+profileForm.addEventListener("submit", submitForm);
+
+
 
 function renderMessage(type, message) {
     // Message structure
@@ -20,27 +57,20 @@ function renderMessage(type, message) {
     const messageBodySpan = document.createElement("span");
     messageBodySpan.classList.add("message-body");
     messageBodySpan.innerText = message;
-    if(type === "error") {
+    if (type === "error") {
         messageDiv.classList.add("error");
     } else {
         messageDiv.classList.add("success");
     }
     messageDiv.append(img, messageBodySpan);
-    function fadeOut(){
+
+    function fadeOut() {
         messageDiv.style.opacity = '0';
         messageDiv.addEventListener('transitionend', () => messageDiv.remove());
     }
+
     setTimeout(fadeOut, 3000);
     messagesContainer.append(messageDiv);
-}
-
-async function sendData({user_id, data}) {
-    const options = {
-        "method": "POST",
-        "body": JSON.stringify(data)
-    };
-    const response = await fetch(API_URL_V1 + "/users/" + user_id + "/edit", options);
-    return await response.json();
 }
 
 async function resolveFirstName(e) {
@@ -53,19 +83,6 @@ async function resolveFirstName(e) {
         firstNameField.setAttribute("readonly", "");
         editFirstNameBtn.setAttribute("alt", "edit");
         editFirstNameBtn.setAttribute("src", PREFIX + "/assets/images/pen.png");
-        // Send data
-        const user_id = firstNameField.dataset.userId;
-        const {errors, message, data} = await sendData({
-            user_id, data: {
-                first_name: firstNameField.value
-            }
-        });
-        if (errors.length !== 0) {
-            renderMessage("error", errors[0].message);
-        } else {
-            firstNameField.value = data.first_name;
-            renderMessage("success", message);
-        }
     }
 }
 
@@ -79,19 +96,6 @@ async function resolveLastName(e) {
         lastNameField.setAttribute("readonly", "");
         editLastNameBtn.setAttribute("alt", "edit");
         editLastNameBtn.setAttribute("src", PREFIX + "/assets/images/pen.png");
-        // Send data
-        const user_id = lastNameField.dataset.userId;
-        const {errors, message, data} = await sendData({
-            user_id, data: {
-                last_name: lastNameField.value
-            }
-        });
-        if (errors.length !== 0) {
-            renderMessage("error", errors[0].message);
-        } else {
-            lastNameField.value = data.last_name;
-            renderMessage("success", message);
-        }
     }
 }
 
