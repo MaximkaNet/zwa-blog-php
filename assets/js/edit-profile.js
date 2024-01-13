@@ -16,7 +16,6 @@ async function submitForm(e) {
         "body": new FormData(e.target)
     };
     const response = await fetch(API_URL_V1 + "/users/" + user_id + "/edit", fetchOptions);
-    console.log(await response.text());
     const {errors, message, data} = await response.json();
     if (errors.length !== 0) {
         renderMessage("error", errors[0].message);
