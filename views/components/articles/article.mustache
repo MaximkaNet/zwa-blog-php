@@ -1,5 +1,5 @@
 <article class="post" id="post-{{id}}">
-    <section class="post-header">
+    <div class="post-header">
         <a href="{{user.link}}">
             <img
                     src="{{user.avatar}}"
@@ -11,8 +11,8 @@
             <a href="{{user.link}}" class="link-white">{{user.full_name}}</a>
             <span class="post-date">{{date}}</span>
         </div>
-    </section>
-    <section class="post-body">
+    </div>
+    <div class="post-body">
         <h1 class="post-title">
             <a
                     href="{{url}}"
@@ -25,8 +25,8 @@
             {{content}}
             <a href="{{url}}" class="link-orange">Read more...</a>
         </div>
-    </section>
-    <section class="post-footer">
+    </div>
+    <div class="post-footer">
         <div
                 class="post-footer-option"
                 data-post-id="{{id}}"
@@ -51,5 +51,5 @@
             >
             <span>{{count_saved}}</span>
         </div>
-    </section>
+    </div>
 </article>
