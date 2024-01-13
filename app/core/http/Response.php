@@ -55,7 +55,7 @@ class Response
      * @param int|null $code
      * @return void
      */
-    public function addError(string $message, int $code = null): void
+    public function addError(string $message, int|null $code = null): void
     {
         $error["message"] = $message;
         if(isset($code)){
