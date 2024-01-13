@@ -24,7 +24,7 @@ export class Validator {
             required && re.test(value) ||
             !required && re.test(value) ||
             !required && value == null
-        ){
+        ) {
             return new Result(true, `${field_name} is valid`);
         }
         return new Result(
@@ -75,6 +75,7 @@ export class FileValidator {
         file,
         allowed_types = ["png", "jpg", "jpeg", "svg", "ico"]
     ) {
+        if (file.name.length === 0) return new Result(true, "File is empty");
         const fileType = file.name.substring(file.name.indexOf(".") + 1);
         if (fileType.toLowerCase() in allowed_types) {
             return new Result(true, "Type is valid");

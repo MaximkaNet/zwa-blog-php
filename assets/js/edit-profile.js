@@ -34,30 +34,34 @@ async function submitForm(e) {
     // Validation
     const formData = new FormData(e.target);
     const avatar = formData.get("avatar");
-    const avatar_validation = {
-        type: FileValidator.type(avatar),
-        size: FileValidator.size(avatar)
-    };
-    if (avatar.name !== '' && avatar_validation.type.isValid() && avatar_validation.size.isValid()) {
-        if(avatar_validation.type.isNotValid()){
-            renderMessage("error", "Invalid file type");
+    if (avatar.name.length !== 0) {
+        const avatar_validation = {
+            type: FileValidator.type(avatar),
+            size: FileValidator.size(avatar)
+        };
+        if (avatar_validation.type.isNotValid() || avatar_validation.size.isNotValid()) {
+            if (avatar_validation.type.isNotValid()) {
+                renderMessage("error", "Invalid file type");
+            }
+            if (avatar_validation.size.isNotValid()) {
+                renderMessage("error", "Too big file. Max ~10kb");
+            }
+            formData.delete("avatar");
+            removeFileFromAvatarInput();
+            return;
         }
-        if(avatar_validation.size.isNotValid()){
-            renderMessage("error", "Too big file. Max ~10kb");
-        }
-        formData.delete("avatar");
-        removeFileFromAvatarInput();
-        return;
     }
+
     const names_validation = {
         first_name: Validator.name(formData.get("first_name"), "First name"),
         last_name: Validator.name(formData.get("last_name"), "Last name"),
     }
-    if(names_validation.first_name.isNotValid()) {
-        renderMessage("error", "First name is not valid");
+
+    if (names_validation.first_name.isNotValid()) {
+        renderMessage("error", names_validation.first_name.getMessage());
         return;
     }
-    if(names_validation.last_name.isNotValid()) {
+    if (names_validation.last_name.isNotValid()) {
         renderMessage("error", "Last name is not valid");
         return;
     }
