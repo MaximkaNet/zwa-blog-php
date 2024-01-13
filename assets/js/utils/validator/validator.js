@@ -5,20 +5,26 @@ export class Validator {
         const field_name = "Email";
         const re = new RegExp(/^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$/);
         if (required && value == null) {
-            return new Result(false, `${field_name} is not valid`);
-        }
-        if (re.test(value)) {
+            return new Result(false, `${field_name} is not valid. Empty`);
+        } else if (
+            required && re.test(value) ||
+            !required && re.test(value) ||
+            !required && value == null
+        ) {
             return new Result(true, `${field_name} is valid`);
         }
         return new Result(false, `${field_name} is not valid`);
     }
 
     static password(value, field_name = "Password", required = false) {
-        const re = new RegExp(/^(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
+        const re = new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
         if (required && value == null) {
             return new Result(false, `${field_name} field is required`);
-        }
-        if (re.test(value)) {
+        } else if (
+            required && re.test(value) ||
+            !required && re.test(value) ||
+            !required && value == null
+        ){
             return new Result(true, `${field_name} is valid`);
         }
         return new Result(
@@ -31,6 +37,12 @@ export class Validator {
         const re = new RegExp(/\s+/);
         if (required && value == null) {
             return new Result(false, `${field_name} field is required`);
+        } else if (
+            required && !re.test(value) ||
+            !required && !re.test(value) ||
+            !required && value == null
+        ) {
+            return new Result(true, `${field_name} field is valid`);
         }
         if (value.length > 15) {
             return new Result(false, `${field_name} is too long`);
@@ -53,7 +65,7 @@ export class FileValidator {
      * @returns {Result}
      */
     static size(file, max_size = 10000) {
-        if(file.size < max_size){
+        if (file.size < max_size) {
             return new Result(true, "File is valid");
         }
         return new Result(false, "File is not valid");
@@ -62,9 +74,9 @@ export class FileValidator {
     static type(
         file,
         allowed_types = ["png", "jpg", "jpeg", "svg", "ico"]
-    ){
+    ) {
         const fileType = file.name.substring(file.name.indexOf(".") + 1);
-        if(fileType.toLowerCase() in allowed_types) {
+        if (fileType.toLowerCase() in allowed_types) {
             return new Result(true, "Type is valid");
         }
         return new Result(false, "Type is not valid");
