@@ -53,7 +53,7 @@ class UsersAPIController
             // Handle avatar
             /** @var UploadedFile $avatar */
             $avatar = $request->getUploadedFiles()["avatar"] ?? null;
-            if (isset($avatar)) {
+            if (isset($avatar) and $avatar->getError() !== UPLOAD_ERR_NO_FILE) {
                 $service->changeAvatar($user->getId(), $avatar, ["png", "jpg", "jpeg", "ico", "svg"]);
                 $response_body->addData(["avatar" => $avatar->getName()]);
                 $changed = true;

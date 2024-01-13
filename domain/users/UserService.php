@@ -37,6 +37,7 @@ class UserService
         if($user_exists) throw UserException::Conflict("User already exists");
         // Create a new record in database
         $created_user_id = $repo->create([
+            "username" => $this->generateUserName(10),
             "email" => $email,
             "password" => password_hash($password, PASSWORD_DEFAULT),
             "full_name" => $first_name . (isset($last_name) ? " " . $last_name : ""),
@@ -44,6 +45,17 @@ class UserService
         ]);
         // Returns registered user with id
         return $repo->findById($created_user_id);
+    }
+
+    /**
+     * Generate user name
+     * @param int $length
+     * @return string
+     */
+    private function generateUserName(int $length): string
+    {
+        return substr(bin2hex(random_bytes($length)),
+            0, $length);
     }
 
     /**

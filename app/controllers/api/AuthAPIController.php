@@ -74,7 +74,7 @@ class AuthAPIController
                 "last_name" => Validator::lastName($request_body["last_name"] ?? null),
                 "email" => Validator::email($request_body["email"] ?? null, true),
                 "password" => Validator::password($request_body["password"] ?? null, true),
-                "confirm_password" => Validator::passwordConfirm($request_body["password_confirm"] ?? null, true)
+                "confirm_password" => Validator::passwordConfirm($request_body["confirm_password"] ?? null, true)
             ];
 
             foreach ($validators as $validator) {
@@ -84,7 +84,7 @@ class AuthAPIController
             }
 
             // Check passwords
-            if ($request_body["password"] == $request_body["password_confirm"]) {
+            if ($request_body["password"] == $request_body["confirm_password"]) {
                 $service = new UserService();
                 $user = $service->registration(
                     $request_body["email"],
