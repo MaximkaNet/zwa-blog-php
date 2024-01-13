@@ -10,6 +10,7 @@
 @import "widget.css";
 @import "admin/layout.css";
 @import "admin/profile.css";
+@import "admin/edit.css";
 /*@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');*/
 /* Reset css*/
 * {

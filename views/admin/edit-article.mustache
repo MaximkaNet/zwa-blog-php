@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="{{app.lang}}">
+{{>components/common/head}}
+<body class="body-admin">
+{{#admin}}
+    {{#menu}}
+        {{>admin/common/mobile-menu}}
+    {{/menu}}
+    <div class="admin-layout">
+        {{#menu}}
+            {{>admin/common/menu}}
+        {{/menu}}
+        <main>
+            {{#header}}
+                {{>admin/common/header}}
+            {{/header}}
+            {{#body}}
+                <div class="admin-body">
+                    <!-- Title, content, category -->
+                    <form method="post" id="edit-post" class="edit-article">
+                        <div>
+                            <label for="post_title" class="post-title">
+                                Title
+                                <input
+                                        id="post_title"
+                                        class="content-wrapper"
+                                        type="text"
+                                        name="title"
+                                        value="{{title}}"
+                                        required>
+                            </label>
+                            <label for="post_content" class="post-content">
+                                Content
+                            <textarea name="content"
+                                      class="content-wrapper"
+                                      id="post_content"
+                                      cols="30"
+                                      rows="10"
+                            >{{content}}</textarea>
+                            </label>
+                            <label for="post_id">
+                                <input
+                                        id="post_id"
+                                        type="text"
+                                        name="id"
+                                        value="{{id}}"
+                                        hidden>
+                            </label>
+                        </div>
+                        <div>
+                            <label for="post_category" class="post-category">
+                                Category
+                                <select name="category_id" id="post_category" class="content-wrapper">
+                                    {{#categories}}
+                                        <option value="{{id}}">{{display_name}}</option>
+                                    {{/categories}}
+                                </select>
+                            </label>
+                            <button type="submit" class="primary-btn">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            {{/body}}
+        </main>
+    </div>
+    {{#scripts}}
+        <script src="{{src}}" type="module"></script>
+    {{/scripts}}
+{{/admin}}
+</body>
+</html>

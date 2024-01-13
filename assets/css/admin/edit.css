@@ -1,0 +1,69 @@
+.admin-body .edit-article {
+    display: flex;
+    gap: 30px;
+    height: 100%;
+}
+
+.edit-article>div {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-article>div:nth-child(1) {
+    flex-basis: 75%;
+    gap: 30px;
+}
+
+.edit-article>div:nth-child(2) {
+    flex-basis: 25%;
+    gap: 20px;
+}
+
+.edit-article .post-title {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0;
+    font-size: 16pt;
+    gap: 5px;
+}
+
+.edit-article .post-title input {
+    outline: none;
+    padding: 15px 20px;
+    font-size: 12pt;
+    color: var(--white-color);
+}
+
+.edit-article .post-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0;
+    font-size: 16pt;
+    gap: 5px;
+}
+
+.edit-article .post-content textarea {
+    outline: none;
+    font-size: 12pt;
+    color: var(--white-color);
+    flex-basis: auto;
+}
+
+.edit-article .post-category {
+    width: 100%;
+    color: var(--white-color);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.edit-article .post-category select {
+    width: 100%;
+    background-color: #380C41;
+    padding: 10px 12px;
+    color: var(--white-color);
+}
