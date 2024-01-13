@@ -5,3 +5,4 @@ vendor/*
 !vendor/maximkanet_autoloader.php
 .env
 composer.lock
+.phpdoc
