@@ -179,3 +179,9 @@ body {
 .bg-gradient {
     background: linear-gradient(220deg, #EF745C 0%, #98414E 40%, #34073D 100%) no-repeat;
 }
+
+@media print {
+    .header-account {
+        display: none;
+    }
+}
