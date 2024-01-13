@@ -109,10 +109,12 @@ class UserService
         if(!$user) throw UserException::NotFound("User not found");
         // Save uploaded file to storage
         try {
-
-            $prev_avatar = __DIR__ . "/../../static/users/" . $user->getAvatar();
-            if(file_exists($prev_avatar)){
-                unlink($prev_avatar);
+            $avatar = $user->getAvatar();
+            if(isset($avatar)) {
+                $prev_avatar = __DIR__ . "/../../static/users/" . $user->getAvatar();
+                if (file_exists($prev_avatar)) {
+                    unlink($prev_avatar);
+                }
             }
             $uploads_path = "/static/users";
             if(!$avatar->moveTo($uploads_path)) {
