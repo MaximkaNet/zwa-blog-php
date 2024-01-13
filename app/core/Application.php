@@ -17,7 +17,7 @@ class Application
     public function __construct()
     {
         $this->meta_head = new Meta();
-        $this->meta_head->setLanguage("cs");
+        $this->meta_head->setLanguage(Meta::LANG_CZ);
         $this->meta_head->setFaviconLink(Router::link("/assets/images/favicon.ico", $_ENV["URL_PREFIX"]));
     }
 

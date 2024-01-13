@@ -5,7 +5,7 @@ namespace app\core;
 class Meta
 {
     public const LANG_EN = "en";
-    public const LANG_CZ = "cz";
+    public const LANG_CZ = "cs";
     public const LANG_UA = "uk";
     public const LANG_RU = "ru";
 
