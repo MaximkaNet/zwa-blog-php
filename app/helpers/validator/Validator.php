@@ -73,7 +73,7 @@ class Validator
         if (strlen("$value") > 15) {
             return new Result(false, "$field_name is too long");
         }
-        if(preg_match("/\s/", "$value")){
+        if(preg_match("/\s+/", "$value")){
             return new Result(false, "Gaps in $field_name are not allowed");
         }
         return new Result(
@@ -91,7 +91,7 @@ class Validator
         if (strlen("$value") > 15) {
             return new Result(false, "$field_name is too long");
         }
-        if(preg_match("/\s/", "$value")){
+        if(preg_match("/\s+/", "$value")){
             return new Result(false, "Gaps in $field_name are not allowed");
         }
         return new Result(
