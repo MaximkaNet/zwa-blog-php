@@ -1,19 +1,19 @@
-.widget-body .profile {
+.widget-profile {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 }
 
-.widget-body .profile img {
+.widget-profile img {
     min-width: 64px;
     max-width: 64px;
 }
 
-.widget-body .profile-info {
+.widget-profile .info {
     color: var(--white-color);
 }
 
-.widget-body .profile-info .role {
+.widget-profile .info .role {
     color: #9ddc6c;
 }

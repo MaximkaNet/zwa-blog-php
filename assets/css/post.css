@@ -1,12 +1,8 @@
-.post {
+.posts .post {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    border-radius: 10px;
-    padding: 20px;
     margin-bottom: 30px;
-    background-color: var(--secondary-color);
-    box-shadow: #0000003F 0 0 10px 0;
 }
 
 .post-header {
@@ -34,6 +30,10 @@
 .post-title {
     color: white;
     margin-bottom: 5px;
+}
+
+.post-title a {
+    font-size: 16pt;
 }
 
 .post-short-content {

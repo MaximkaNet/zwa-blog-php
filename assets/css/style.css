@@ -3,7 +3,7 @@
 @import "auth/error.css";
 @import "auth/auth.css";
 @import "single.css";
-@import "profile.css";
+@import "widgets/widget-profile.css";
 @import "pagination.css";
 @import "footer.css";
 @import "layout.css";
@@ -30,7 +30,7 @@
     --sidebar-admin-width: 150px;
 }
 
-body {
+.body-main {
     padding-left: 20px;
     padding-right: 20px;
 }
@@ -38,6 +38,15 @@ body {
 .body-admin {
     padding-left: 0;
     padding-right: 0;
+}
+
+/* Wrappers */
+
+.content-wrapper {
+    border-radius: 10px;
+    padding: 20px;
+    background-color: var(--secondary-color);
+    box-shadow: #0000003F 0 0 10px 0;
 }
 
 /* Containers */

@@ -5,53 +5,54 @@
 <noscript>Available javascript to use this application</noscript>
 {{>components/common/header}}
 {{#single}}
-<article class="single post" id="post-{{id}}">
-    <section class="post-header">
-        <a href="{{user.link}}">
-            <img
-                src="{{user.avatar.src}}"
-                alt="User icon"
-                class="user-avatar"
+    <article class="single post content-wrapper" id="post-{{id}}">
+        <section class="post-header">
+            <a href="{{user.link}}">
+                <img
+                        src="{{user.avatar.src}}"
+                        alt="User icon"
+                        class="user-avatar"
+                >
+            </a>
+            <div>
+                <a href="{{user.link}}" class="link-white">{{user.full_name}}</a>
+                <span class="post-date">{{date}}</span>
+            </div>
+        </section>
+        <section class="post-body">
+            <h1 class="post-title">
+                {{title}}
+            </h1>
+            <div class="post-content">
+                {{#content}}{{.}}{{/content}}
+                {{^content}}Content is not provided{{/content}}
+                <!-- Insert html from database or generate, but  -->
+                <!-- context must have 'sections' means render by sections. -->
+            </div>
+        </section>
+        <section class="post-footer">
+            <div
+                    class="post-footer-option"
+                    data-post-id="{{id}}"
+                    data-action="like"
             >
-        </a>
-        <div>
-            <a href="{{user.link}}" class="link-white">{{user.full_name}}</a>
-            <span class="post-date">{{date}}</span>
-        </div>
-    </section>
-    <section class="post-body">
-        <h1 class="post-title">
-            {{title}}
-        </h1>
-        <div class="post-content">
-            {{#content}}{{.}}{{/content}}
-            {{^content}}Content is not provided{{/content}}
-            <!-- Insert html from database or generate, but  -->
-            <!-- context must have 'sections' means render by sections. -->
-        </div>
-    </section>
-    <section class="post-footer">
-        <div
-            class="post-footer-option"
-            data-post-id="{{id}}"
-            data-action="like"
-        >
-            <img class="option-img" src="{{asset_links.like}}" alt="like">
-            <span>{{rating}}</span>
-        </div>
-        <div
-            class="post-footer-option"
-            data-post-id="{{id}}"
-            data-action="save"
-        >
-            <img class="option-img" src="{{asset_links.save}}" alt="save">
-            <span>{{count_saved}}</span>
-        </div>
-    </section>
-</article>
+                <img class="option-img" src="{{asset_links.like}}" alt="like">
+                <span>{{rating}}</span>
+            </div>
+            <div
+                    class="post-footer-option"
+                    data-post-id="{{id}}"
+                    data-action="save"
+            >
+                <img class="option-img" src="{{asset_links.save}}" alt="save">
+                <span>{{count_saved}}</span>
+            </div>
+        </section>
+    </article>
 {{/single}}
 {{^single}}
-<div style="color: white">Post not found</div>
+    <div style="color: white">Post not found</div>
 {{/single}}
+{{>components/common/footer}}
 </body>
 </html>
