@@ -3,7 +3,10 @@
 namespace domain\posts;
 
 use app\core\database\MysqlConfig;
+use app\core\exception\ApplicationException;
 use app\core\utils\queryBuilder\QueryBuilder;
+use domain\categories\CategoriesRepository;
+use domain\categories\CategoriesService;
 
 class PostsService
 {
@@ -67,5 +70,94 @@ class PostsService
         ]);
 
         return !empty($post);
+    }
+
+    /**
+     * Get one post by id
+     * @param int $id
+     * @return Post|null
+     */
+    public function getOne(int $id): ?Post
+    {
+        $posts_repo = PostsRepository::init($this->db_config->getPDO());
+        return $posts_repo->findById($id);
+    }
+
+    /**
+     * Find post with empty content
+     * @return Post|null
+     */
+    public function findEmpty(): ?Post
+    {
+        $posts_repo = PostsRepository::init($this->db_config->getPDO());
+        return $posts_repo->findOne(["posts" => ["content" => ""]]);
+    }
+
+    /**
+     * Edit title
+     * @param int $post_id
+     * @param string $title
+     * @return void
+     * @throws ApplicationException
+     */
+    public function editTitle(int $post_id, string $title): void
+    {
+        $posts_repo = PostsRepository::init($this->db_config->getPDO());
+        $post = $posts_repo->findById($post_id);
+        if(!$post) throw new ApplicationException("Post not found", 404);
+        $posts_repo->update([
+            "title" => $title
+        ], [
+            "id" => $post_id
+        ]);
+    }
+
+    /**
+     * Edit content
+     * @param int $post_id
+     * @param string $content
+     * @return void
+     * @throws ApplicationException
+     */
+    public function editContent(int $post_id, string $content): void
+    {
+        $posts_repo = PostsRepository::init($this->db_config->getPDO());
+        $post = $posts_repo->findById($post_id);
+        if(!$post) throw new ApplicationException("Post not found", 404);
+        $posts_repo->update([
+            "content" => $content
+        ], [
+            "id" => $post_id
+        ]);
+    }
+
+    /**
+     * Change category
+     * @param int $post_id
+     * @param int $category_id
+     * @return void
+     * @throws ApplicationException
+     */
+    public function changeCategory(int $post_id, int $category_id): void
+    {
+        $posts_repo = PostsRepository::init($this->db_config->getPDO());
+        $categories_repo = CategoriesRepository::init($this->db_config->getPDO());
+        $post = $posts_repo->findById($post_id);
+        $category = $categories_repo->findById($category_id);
+        if(!$post) throw new ApplicationException("Post not found", 404);
+        if(!$category) throw new ApplicationException("Category not found", 404);
+        $posts_repo->update([
+            "category_id" => $category_id
+        ], [
+            "id" => $post_id
+        ]);
+    }
+
+    public function delete(int $post_id): void
+    {
+        $posts_repo = PostsRepository::init($this->db_config->getPDO());
+        $post = $posts_repo->findById($post_id);
+        if(!$post) throw new ApplicationException("Post not found", 404);
+        $posts_repo->delete(["posts" => ["id" => $post->getId()]]);
     }
 }

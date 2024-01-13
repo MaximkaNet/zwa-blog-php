@@ -166,6 +166,7 @@ class PostsRepository implements IRepositoryFactory
         $qb->innerJoin($posts_table, "user_id", $users_table, "id");
         $qb->innerJoin($posts_table, "category_id", $categories_table, "id");
         $qb->where($where);
+        $qb->orderBy(["posts" => "created_at"], "desc");
         if (isset($options["limit"]["limit"])) {
             $qb->setMaxResults($options["limit"]["limit"]);
         }
@@ -227,11 +228,33 @@ class PostsRepository implements IRepositoryFactory
 
     function update(array $values, array $where = null): void
     {
-        // TODO: Implement update() method.
+        $qb = new QueryBuilder();
+        $qb->update(self::$table_name, $values)
+            ->where($where);
+        $stmt = $this->pdo->prepare($qb->getSQL());
+        $values_to_bind = $qb->getParamsWithValuesWithTypes();
+        if (isset($values_to_bind)) {
+            foreach ($values_to_bind as $param => ["type" => $type, "value" => $value]) {
+                $stmt->bindValue($param, $value, $type);
+            }
+        }
+        $stmt->execute();
+        $stmt->closeCursor();
     }
 
     function delete(array $where = null): void
     {
-        // TODO: Implement delete() method.
+        $qb = new QueryBuilder();
+        $qb->deleteFrom(self::$table_name)
+            ->where($where);
+        $stmt = $this->pdo->prepare($qb->getSQL());
+        $values_to_bind = $qb->getParamsWithValuesWithTypes();
+        if (isset($values_to_bind)) {
+            foreach ($values_to_bind as $param => ["type" => $type, "value" => $value]) {
+                $stmt->bindValue($param, $value, $type);
+            }
+        }
+        $stmt->execute();
+        $stmt->closeCursor();
     }
 }

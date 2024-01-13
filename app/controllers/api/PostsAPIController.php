@@ -2,6 +2,12 @@
 
 namespace app\controllers\api;
 
+use app\core\exception\ApplicationException;
+use app\core\http\Response;
+use app\core\http\ServerRequest;
+use domain\posts\PostsService;
+use domain\users\UserRole;
+
 class PostsAPIController
 {
     public static function create(): void
@@ -13,16 +19,69 @@ class PostsAPIController
 
     public static function edit(int $id): void
     {
-
+        header("Content-Type: application/json");
+        $response = new Response();
+        try {
+            if (empty($_SESSION["user"])) {
+                throw new ApplicationException("User is not authorized", 401);
+            } elseif ($_SESSION["user"]["role"] !== UserRole::ADMIN) {
+                throw new ApplicationException("Access denied", 403);
+            }
+            $request = (new ServerRequest())->getParsedBody();
+            $service = PostsService::get();
+            $changed = false;
+            // Validation
+            if (isset($request["title"]) and !empty($request["title"])) {
+                $service->editTitle($id, $request["title"]);
+                $changed = true;
+            }
+            if (isset($request["content"]) and !empty($request["content"])) {
+                $service->editContent($id, $request["content"]);
+                $changed = true;
+            }
+            if (isset($request["category_id"]) and !empty($request["category_id"])) {
+                $service->changeCategory($id, $request["category_id"]);
+                $changed = true;
+            }
+            $response->setResponseCode(200);
+            $response->setMessage($changed ? "Changes saved" : "Without changes");
+        } catch (ApplicationException $e) {
+            $code = is_numeric($e->getCode()) ? $e->getCode() : null;
+            $response->setResponseCode($code);
+            $response->addError($e->getMessage());
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? $e->getCode() : null;
+            $response->setResponseCode($code);
+            $response->addError($e->getMessage());
+        }
+        http_response_code($response->getResponseCode());
+        echo $response->toJSON();
     }
 
-    public static function like(): void
+    public static function delete(int $id): void
     {
-
-    }
-
-    public static function save(): void
-    {
-
+        header("Content-Type: application/json");
+        $response = new Response();
+        try {
+            if (empty($_SESSION["user"])) {
+                throw new ApplicationException("User is not authorized", 401);
+            } elseif ($_SESSION["user"]["role"] !== UserRole::ADMIN) {
+                throw new ApplicationException("Access denied", 403);
+            }
+            $service = PostsService::get();
+            $service->delete($id);
+            $response->setResponseCode(200);
+            $response->setMessage("Post $id deleted");
+        } catch (ApplicationException $e) {
+            $code = is_string($e->getCode()) ? null : $e->getCode();
+            $response->setResponseCode($code);
+            $response->addError($e->getMessage());
+        } catch (\Exception $exception) {
+            $code = is_string($exception->getCode()) ? null : $exception->getCode();
+            $response->setResponseCode($code);
+            $response->addError($exception->getMessage());
+        }
+        http_response_code($response->getResponseCode());
+        echo $response->toJSON();
     }
 }
