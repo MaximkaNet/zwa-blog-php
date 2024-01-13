@@ -18,6 +18,11 @@ class UsersAPIController
         try {
             $request = new ServerRequest();
             $request_body = $request->getParsedBody();
+            // Check files file
+//            $file_upload_length = $request->getServerParams()["CONTENT_LENGTH"];
+//            if ($file_upload_length > 1000) {
+//                throw new ApplicationException("Big file size");
+//            }
             $changed = false;
             $service = new UserService();
             $user = $service->getOne($id);

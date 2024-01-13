@@ -78,8 +78,8 @@ class ServerRequest implements IServerRequest
             "QUERY_STRING" => $_SERVER["QUERY_STRING"],
             "SERVER_PROTOCOL" => $_SERVER["SERVER_PROTOCOL"],
             "GATEWAY_INTERFACE" => $_SERVER["GATEWAY_INTERFACE"],
-//            "CONTENT_LENGTH" => $_SERVER["CONTENT_LENGTH"],
-//            "CONTENT_TYPE" => $_SERVER["CONTENT_TYPE"],
+            "CONTENT_LENGTH" => $_SERVER["CONTENT_LENGTH"] ?? null,
+            "CONTENT_TYPE" => $_SERVER["CONTENT_TYPE"] ?? null,
             "HTTP_USER_AGENT" => $_SERVER["HTTP_USER_AGENT"],
         ];
     }
