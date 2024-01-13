@@ -372,27 +372,30 @@ class QueryBuilder
             $parts[] = "WHERE";
             $parts[] = $this->buildWhere();
         }
+        if (isset($this->order_by["columns"])) {
+            $parts[] = "ORDER BY";
+            $columns = $this->order_by["columns"];
+            $sort_order = $this->order_by["sort_order"];
+            if (is_array($columns)) {
+                $parts[] = implode(", ", array_map(function ($key, $col) {
+                    if(is_string($key)){
+                        return "$key.$col";
+                    }
+                    return "$col";
+                }, array_keys($columns), $columns));
+            } else {
+                $parts[] = "$columns";
+            }
+            if (isset($sort_order)) {
+                $parts[] = strtoupper($sort_order);
+            }
+        }
         if (isset($this->limit["limit"])) {
             $limit_str = "LIMIT " . $this->limit["limit"];
             if (isset($this->limit["offset"])) {
                 $limit_str .= " OFFSET " . $this->limit["offset"];
             }
             $parts[] = $limit_str;
-        }
-        if (isset($this->order_by["columns"])) {
-            $parts[] = "ORDER BY";
-            $columns = $this->order_by["columns"];
-            $sort_order = $this->order_by["sort_order"];
-            if (is_array($columns)) {
-                $parts[] = implode(", ", array_map(function ($col) {
-                    return "`$col`";
-                }, $columns));
-            } else {
-                $parts[] = "`$columns`";
-            }
-            if (isset($sort_order)) {
-                $parts[] = strtoupper($sort_order);
-            }
         }
         return implode(" ", $parts) . ";";
     }
