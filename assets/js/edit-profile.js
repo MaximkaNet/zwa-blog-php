@@ -1,4 +1,5 @@
 import {API_URL_V1, PREFIX} from "./constants.js";
+import {FileValidator, Validator} from "./utils/validator/validator.js";
 
 const profileForm = document.querySelector("#profile-form");
 
@@ -7,39 +8,86 @@ const firstNameField = document.querySelector("#first_name");
 const editLastNameBtn = document.querySelector("#edit-last-name");
 const lastNameField = document.querySelector("#last_name");
 
-async function submitForm(e) {
-    e.preventDefault();
-    // Send data
-    const user_id = document.querySelector("#user_id").value;
+function removeFileFromAvatarInput() {
+    const dt = new DataTransfer()
+    const input = document.getElementById('avatar-file')
+    const {files} = input
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        if (0 !== i)
+            dt.items.add(file) // here you exclude the file. thus removing it.
+    }
+    input.files = dt.files // Assign the updates list
+}
+
+async function sendData({user_id, data}) {
     const fetchOptions = {
-        "method": "POST",
-        "body": new FormData(e.target)
+        method: "POST",
+        body: data
     };
     const response = await fetch(API_URL_V1 + "/users/" + user_id + "/edit", fetchOptions);
-    const {errors, message, data} = await response.json();
-    if (errors.length !== 0) {
-        renderMessage("error", errors[0].message);
-    } else {
-        renderMessage("success", message);
+    return await response.json();
+}
+
+async function submitForm(e) {
+    e.preventDefault();
+    // Validation
+    const formData = new FormData(e.target);
+    const avatar = formData.get("avatar");
+    const avatar_validation = {
+        type: FileValidator.type(avatar),
+        size: FileValidator.size(avatar)
+    };
+    if (avatar.name !== '' && avatar_validation.type.isValid() && avatar_validation.size.isValid()) {
+        if(avatar_validation.type.isNotValid()){
+            renderMessage("error", "Invalid file type");
+        }
+        if(avatar_validation.size.isNotValid()){
+            renderMessage("error", "Too big file. Max ~10kb");
+        }
+        formData.delete("avatar");
+        removeFileFromAvatarInput();
+        return;
     }
-    if(data != null) {
-        // profileForm.reset();
-        if (data.avatar != undefined) {
-            document.querySelector("#avatar")
-                .setAttribute("src", PREFIX + "/static/users/" + data.avatar);
+    const names_validation = {
+        first_name: Validator.name(formData.get("first_name"), "First name"),
+        last_name: Validator.name(formData.get("last_name"), "Last name"),
+    }
+    if(names_validation.first_name.isNotValid()) {
+        renderMessage("error", "First name is not valid");
+        return;
+    }
+    if(names_validation.last_name.isNotValid()) {
+        renderMessage("error", "Last name is not valid");
+        return;
+    }
+    // Send data
+    const {errors, data, message} = await sendData({
+        user_id: formData.get("id"),
+        data: formData
+    });
+    if (errors.length === 0) {
+        renderMessage("success", message);
+        if (data.avatar !== undefined) {
             document.querySelector("#avatar-file_name").innerText = data.avatar;
+            const pathToAvatar = PREFIX + "/static/users/" + data.avatar;
+            document.querySelector("#avatar").setAttribute("src", pathToAvatar);
         }
-        if (data.first_name != undefined) {
-            firstNameField.value = data.first_name;
+        if (data.first_name !== undefined) {
+            document.querySelector("#first_name").value = data.first_name;
         }
-        if (data.last_name != undefined) {
-            firstNameField.value = data.last_name;
+        if (data.last_name !== undefined) {
+            document.querySelector("#last_name").value = data.last_name;
         }
+        removeFileFromAvatarInput();
+    } else {
+        errors.map(({message}) => {
+            renderMessage("error", message);
+        })
     }
 }
 
 profileForm.addEventListener("submit", submitForm);
-
 
 
 function renderMessage(type, message) {
@@ -73,30 +121,35 @@ function renderMessage(type, message) {
     messagesContainer.append(messageDiv);
 }
 
+function setAttributesForBtn(btn, {alt, src}) {
+    btn.setAttribute("alt", alt);
+    btn.setAttribute("src", src);
+}
+
+function toggleReadonly(input, btn) {
+    if (input.hasAttribute("readonly")) {
+        input.removeAttribute("readonly");
+        setAttributesForBtn(btn, {
+            alt: "complete",
+            src: PREFIX + "/assets/images/save.svg"
+        });
+    } else {
+        input.setAttribute("readonly", "");
+        setAttributesForBtn(btn, {
+            alt: "edit",
+            src: PREFIX + "/assets/images/pen.png"
+        });
+    }
+}
+
 async function resolveFirstName(e) {
     // Toggle readonly
-    if (firstNameField.hasAttribute("readonly")) {
-        firstNameField.removeAttribute("readonly");
-        editFirstNameBtn.setAttribute("alt", "complete");
-        editFirstNameBtn.setAttribute("src", PREFIX + "/assets/images/save.svg");
-    } else {
-        firstNameField.setAttribute("readonly", "");
-        editFirstNameBtn.setAttribute("alt", "edit");
-        editFirstNameBtn.setAttribute("src", PREFIX + "/assets/images/pen.png");
-    }
+    toggleReadonly(firstNameField, editFirstNameBtn);
 }
 
 async function resolveLastName(e) {
     // Toggle readonly
-    if (lastNameField.hasAttribute("readonly")) {
-        lastNameField.removeAttribute("readonly");
-        editLastNameBtn.setAttribute("alt", "complete");
-        editLastNameBtn.setAttribute("src", PREFIX + "/assets/images/save.svg");
-    } else {
-        lastNameField.setAttribute("readonly", "");
-        editLastNameBtn.setAttribute("alt", "edit");
-        editLastNameBtn.setAttribute("src", PREFIX + "/assets/images/pen.png");
-    }
+    toggleReadonly(lastNameField, editLastNameBtn);
 }
 
 editFirstNameBtn.addEventListener("click", resolveFirstName);
