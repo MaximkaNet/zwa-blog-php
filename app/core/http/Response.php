@@ -28,7 +28,7 @@ class Response
      */
     public function getResponseCode(): ?int
     {
-        return $this->code;
+        return $this->code ?? null;
     }
 
     /**
