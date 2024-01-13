@@ -88,7 +88,7 @@ class UploadedFile implements IUploadedFile
                     UPLOAD_ERR_FORM_SIZE => "Upload file form size",
                     UPLOAD_ERR_INI_SIZE => "Upload file ini size",
                     UPLOAD_ERR_NO_FILE => "No file",
-                    default => "Unknown Exception: ". $this->error
+                    default => "Unknown error: ". $this->error
                 },
                 400 // Bad request
             );
