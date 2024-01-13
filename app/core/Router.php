@@ -6,6 +6,11 @@ class Router
 {
     private array $routes = [];
     private string $prefix;
+    private array $not_found = [
+        "template" => "404",
+        "context" => [],
+        "message" => "Page not found",
+    ];
 
     /**
      * Prefix in url
@@ -89,13 +94,33 @@ class Router
     }
 
     /**
-     * Set not found callback
-     * @param callable $callback
+     * Set not found template name
+     * @param string $template_name
      * @return void
      */
-    public function notFound(callable $callback): void
+    public function setNotFoundTemplate(string $template_name): void
     {
-        $this->setRoute('/404', 'get', $callback);
+        $this->not_found["template"] = $template_name;
+    }
+
+    /**
+     * Set not found page context. Will be used if is set not found template
+     * @param array $context
+     * @return void
+     */
+    public function setNotFoundContext(array $context): void
+    {
+        $this->not_found["context"] = $context;
+    }
+
+    /**
+     * Will be used if not found template is not found
+     * @param string $message
+     * @return void
+     */
+    public function setNotFoundMessage(string $message): void
+    {
+        $this->not_found["message"] = $message;
     }
 
     /**
@@ -183,33 +208,39 @@ class Router
      * Match request url with routes and call callback
      * @param string $path
      * @param string $method
-     * @return View|null
+     * @return View|string|null
      */
-    public function resolve(string $path, string $method): ?View
+    public function resolve(string $path, string $method): View|string|null
     {
         if (isset($this->routes[$method])) {
             $normalized_path = self::normalizePath($path);
             foreach ($this->routes[$method] as $route) {
                 if (Router::matchUrl($normalized_path, $route["regexp"], $params)) {
                     $props = call_user_func($route["callback"], ...$params);
-                    if (empty($props)) {
+                    if(isset($props["template"])){
+                        $view = new View($props["template"]);
+                        $view->setContext($props["context"] ?? []);
+                        return $view;
+                    } elseif (is_string($props)) {
+                        return $props;
+                    } elseif (empty($props)) {
                         return null;
                     }
-                    $view = new View($props["template"]);
-                    $view->setContext($props["context"] ?? []);
-                    return $view;
                 }
             }
         }
         // Not found page
-        $props = call_user_func($this->getRoute('/404', 'get')["callback"]);
-        $view = new View("404");
-        $view->setContext($props["context"] ?? []);
-        $view->addValuesToContext([
-            "head" => [
-                "title" => "Page not found"
-            ]
-        ]);
-        return $view;
+        if(isset($this->not_found["template"])){
+            $view = new View($this->not_found["template"]);
+            $view->setContext($props["context"] ?? []);
+            $view->addValuesToContext([
+                "head" => [
+                    "title" => "Page not found"
+                ]
+            ]);
+            return $view;
+        } else {
+            return $this->not_found["message"] ?? "Page not found";
+        }
     }
 }

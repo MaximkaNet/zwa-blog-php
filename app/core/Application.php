@@ -51,11 +51,14 @@ class Application
         $req = new ServerRequest();
         $request_uri = $req->getServerParams()["REQUEST_URI"];
         $request_method = $req->getServerParams()["REQUEST_METHOD"];
-        if(empty($this->router))
+        if (empty($this->router)) {
             throw new ApplicationException("Router has not applied");
+        }
         session_start();
         $view = $this->router->resolve($request_uri, $request_method);
-        if(isset($view)){
+        if (is_string($view)) {
+            echo $view;
+        } elseif ($view instanceof View) {
             $view->addValuesToContext([
                 "app" => [
                     "lang" => $this->meta_head->getLanguage()
