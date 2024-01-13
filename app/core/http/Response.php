@@ -78,7 +78,7 @@ class Response
     public function addError(string $message, int|null $code = null): void
     {
         $error["message"] = $message;
-        if(isset($code)){
+        if (isset($code)) {
             $error["code"] = $code;
         }
         $this->errors[] = $error;
@@ -101,7 +101,9 @@ class Response
      */
     public function addData(mixed $data): void
     {
-        $this->data[] = $data;
+        if (isset($data)) {
+            $this->data = array_merge_recursive($this->data ?? [], $data);
+        }
     }
 
     /**

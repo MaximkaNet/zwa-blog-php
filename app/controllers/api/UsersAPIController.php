@@ -2,10 +2,11 @@
 
 namespace app\controllers\api;
 
+use app\core\exception\ApplicationException;
 use app\core\http\Response;
 use app\core\http\ServerRequest;
-use app\core\Router;
-use domain\users\UserException;
+use app\core\http\UploadedFile;
+use app\helpers\validator\Validator;
 use domain\users\UserService;
 
 class UsersAPIController
@@ -13,67 +14,56 @@ class UsersAPIController
     public static function edit(int $id): void
     {
         header("Content-Type: application/json");
-        $request = new ServerRequest();
         $response_body = new Response();
-        $avatar = $request->getUploadedFiles()["avatar"] ?? null;
-        $data = [];
-        $errors = [];
-        if ($avatar->getError() === UPLOAD_ERR_OK) {
-            $service = new UserService();
-            try {
-                $type = $avatar->getType();
-                if(!match ($type) {
-                    "png", "jpg", "jpeg", "ico", "svg" => true,
-                    default=>false
-                }){
-                    throw new UserException("Bad file type");
-                }
-                $user = $service->changeAvatar($id, $avatar);
-                $data["avatar"] = htmlspecialchars($user->getAvatar());
-            } catch (UserException $e) {
-                $errors[] = ["message" => $e->getMessage()];
-            }
-        }
-        if (!empty($errors)) {
-            $response_body->setErrors($errors);
-            echo $response_body->toJSON();
-            return;
-        }
         try {
+            $request = new ServerRequest();
+            $request_body = $request->getParsedBody();
+            $changed = false;
             $service = new UserService();
-            if (isset($post["first_name"])) {
-                if (strlen($post["first_name"]) > 10) {
-                    throw new UserException("First name will be less then 20 chars");
+            $user = $service->getOne($id);
+            // Handle fields
+            if (isset($request_body["first_name"])) {
+                $validation_res = Validator::firstName($request_body["first_name"], true);
+                if ($validation_res->isNotValid()) {
+                    throw new ApplicationException($validation_res->getMessage(), 400);
                 }
-                if (empty($post["first_name"])) {
-                    throw new UserException("First name not be empty");
-                }
-                $user = $service->getOne($id);
-                $user->setFirstName($post["first_name"]);
-                $service->editProfile($id, $user->getFullName());
-                $data["first_name"] = htmlspecialchars($user->getFirstName());
+                $user->setFirstName($request_body["first_name"]);
+                $changed = true;
             }
-            if (isset($post["last_name"])) {
-                if (strlen($post["last_name"]) > 10) {
-                    throw new UserException("First name will be less then 10 chars");
+            if (isset($request_body["last_name"])) {
+                $validation_res = Validator::lastName($request_body["last_name"], true);
+                if ($validation_res->isNotValid()) {
+                    throw new ApplicationException($validation_res->getMessage(), 400);
                 }
-                $user = $service->getOne($id);
-                $user->setLastName($post["last_name"]);
-                $service->editProfile($id, $user->getFullName());
-                $data["last_name"] = htmlspecialchars($user->getLastName());
+                $user->setLastName($request_body["last_name"]);
+                $changed = true;
             }
-            $response_body->setMessage("Profile updated");
-            $response_body->setData($data);
-        } catch (UserException $e) {
-            $response_body->setErrors([
-                ["message" => $e->getMessage()]
-            ]);
+            if ($changed) {
+                $service->editFullName($user->getId(), $user->getFullName());
+                $response_body->addData([
+                    "first_name" => $user->getFirstName(),
+                    "last_name" => $user->getLastName(),
+                ]);
+            }
+            // Handle avatar
+            /** @var UploadedFile $avatar */
+            $avatar = $request->getUploadedFiles()["avatar"] ?? null;
+            if (isset($avatar)) {
+                $service->changeAvatar($user->getId(), $avatar, ["png", "jpg", "jpeg", "ico", "svg"]);
+                $response_body->addData(["avatar" => $avatar->getName()]);
+                $changed = true;
+            }
+            $response_body->setResponseCode(200);
+            $response_body->setMessage($changed ? "Changes saved" : "Data is not changed");
+        } catch (ApplicationException $e) {
+            $response_body->setResponseCode($e->getCode());
+            $response_body->addError($e->getMessage());
+        } catch (\Exception $e) {
+            $code = $e->getCode();
+            $response_body->addError($e->getMessage(), is_numeric($code) ? $code : null);
         }
+        http_response_code($response_body->getResponseCode());
         echo $response_body->toJSON();
-    }
-
-    public static function changeAvatar(int $id): void
-    {
     }
 
     public static function delete(int $id): void

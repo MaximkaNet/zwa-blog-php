@@ -96,11 +96,19 @@ class UserService
      * Change user avatar
      * @param int $id User id
      * @param UploadedFile $avatar The uploaded avatar
+     * @param array $allowed_types Allowed types for uploaded file
      * @return User
      * @throws UserException
      */
-    public function changeAvatar(int $id, UploadedFile $avatar): User
+    public function changeAvatar(int $id, UploadedFile $avatar, array $allowed_types = []): User
     {
+        if(!empty($allowed_types)){
+            $type = $avatar->getType();
+            $res = in_array($type, $allowed_types);
+            if($res === false){
+                throw new UserException("Bad file type");
+            }
+        }
         $config = new MysqlConfig($_ENV["DB_HOST"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
         $repo = UsersRepository::init($config->getPDO());
         // Get user from database
@@ -121,7 +129,7 @@ class UserService
                 throw new UserException("File not uploaded");
             }
             // Set user avatar
-            $user->setAvatar($avatar->getName() .".". $avatar->getType());
+            $user->setAvatar($avatar->getName());
             // Update user avatar in database
             $repo->update(["avatar" => $user->getAvatar()], ["id" => $id]);
             return $user;
@@ -167,7 +175,7 @@ class UserService
      * @return User
      * @throws UserException
      */
-    public function editProfile(int $id, string $full_name): User
+    public function editFullName(int $id, string $full_name): User
     {
         $config = new MysqlConfig($_ENV["DB_HOST"], $_ENV["DB_NAME"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"]);
         $repo = UsersRepository::init($config->getPDO());
