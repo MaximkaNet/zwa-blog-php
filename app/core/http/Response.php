@@ -7,6 +7,7 @@ class Response
     private array|null $errors;
     private array|null $data;
     private string|null $message;
+    private int|null $code;
 
     /**
      * Initialize response
@@ -19,6 +20,25 @@ class Response
         $this->data = $data;
         $this->errors = $errors;
         $this->message = $message;
+    }
+
+    /**
+     * Get response code
+     * @return int|null
+     */
+    public function getResponseCode(): ?int
+    {
+        return $this->code;
+    }
+
+    /**
+     * Set response code
+     * @param int $code
+     * @return void
+     */
+    public function setResponseCode(int $code): void
+    {
+        $this->code = $code;
     }
 
     /**
