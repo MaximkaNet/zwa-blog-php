@@ -90,6 +90,12 @@ class ServerRequest implements IServerRequest
      */
     public function getCookieParams(): array
     {
-        // TODO: Implement getCookieParams() method.
+        return $_COOKIE;
+    }
+
+    public function getQueryParams(): array
+    {
+        $query = $_SERVER["QUERY_STRING"];
+        return $_GET;
     }
 }
