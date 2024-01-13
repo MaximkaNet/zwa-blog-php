@@ -109,8 +109,8 @@ class UserService
         if(!$user) throw UserException::NotFound("User not found");
         // Save uploaded file to storage
         try {
-            $avatar = $user->getAvatar();
-            if(isset($avatar)) {
+            $avatar_check = $user->getAvatar();
+            if(isset($avatar_check)) {
                 $prev_avatar = __DIR__ . "/../../static/users/" . $user->getAvatar();
                 if (file_exists($prev_avatar)) {
                     unlink($prev_avatar);
