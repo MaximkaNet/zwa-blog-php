@@ -210,6 +210,7 @@ class AdminController
             $admin_body_context["categories"][] = [
                 "display_name" => $category->getDisplayName(),
                 "id" => $category->getId(),
+                "current" => ($category->getId() === $post->getCategory()->getId())
             ];
         }
         // ------
