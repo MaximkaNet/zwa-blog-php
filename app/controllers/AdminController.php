@@ -68,7 +68,7 @@ class AdminController
         $admin_context["header"] = $header_context;
         $admin_context["body"] = $body_context;
         $admin_context["scripts"] = [
-            ["src" => Router::link("/assets/js/delete-post.js")]
+            ["src" => Router::link("/assets/js/delete-post.js", $_ENV["URL_PREFIX"])]
         ];
         return [
             "template" => "admin/my_posts",
