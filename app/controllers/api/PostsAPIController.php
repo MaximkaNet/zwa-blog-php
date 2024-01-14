@@ -14,7 +14,21 @@ class PostsAPIController
     {
         // Check user authorized and role
         header("Content-Type: application/json");
-        echo "{\"message\": \"Hello\"}";
+        $response = new Response();
+        try {
+            // ...
+            throw new ApplicationException("Service unavailable");
+        } catch (ApplicationException $e) {
+            $code = is_numeric($e->getCode()) ? $e->getCode() : null;
+            $response->setResponseCode($code);
+            $response->addError($e->getMessage());
+        } catch (\Exception $e) {
+            $code = is_numeric($e->getCode()) ? $e->getCode() : null;
+            $response->setResponseCode($code);
+            $response->addError($e->getMessage());
+        }
+        http_response_code($response->getResponseCode());
+        echo $response->toJSON();
     }
 
     public static function edit(int $id): void
