@@ -42,9 +42,9 @@ async function submitForm(e) {
         };
         if (avatar_validation.type.isNotValid() || avatar_validation.size.isNotValid()) {
             if (avatar_validation.type.isNotValid()) {
-                renderMessage("error", "Invalid file type");
+                renderMessage("error", "Invalid file type. File was removed");
             } else {
-                renderMessage("error", "Too big file. Max ~10kb");
+                renderMessage("error", "Too big file. Max ~10kb. File was removed");
             }
             formData.delete("avatar");
             removeFileFromAvatarInput();
