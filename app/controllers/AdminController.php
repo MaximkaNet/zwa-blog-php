@@ -23,11 +23,6 @@ class AdminController
             return [];
         }
 
-        if ($_SESSION["user"]["role"] === UserRole::USER) {
-            header("Location: " . Router::link("/admin/profile", $_ENV["URL_PREFIX"]));
-            return [];
-        }
-
         $head_context = ContextHelper::headContext();
         $head_context["title"] = "My posts";
         $admin_context = ContextHelper::adminContext();
@@ -35,10 +30,11 @@ class AdminController
         $body_context = ContextHelper::adminBodyContext();
 
         $header_context["title"] = "My posts";
-        $header_context["write_post_btn"] = [
-            "link" => Router::link("/admin/article", $_ENV["URL_PREFIX"])
-        ];
-
+        if ($_SESSION["user"]["role"] === UserRole::ADMIN) {
+            $header_context["write_post_btn"] = [
+                "link" => Router::link("/admin/article", $_ENV["URL_PREFIX"])
+            ];
+        }
         $service = PostsService::get();
         $posts = $service->getAllForUser($_SESSION["user"]["id"]);
         if (isset($posts)) {
@@ -62,6 +58,10 @@ class AdminController
                 ];
             }
         } else {
+            if ($_SESSION["user"]["role"] === UserRole::USER) {
+                header("Location: " . Router::link("/admin/profile", $_ENV["URL_PREFIX"]));
+                return [];
+            }
             $body_context["items"] = [];
         }
 
