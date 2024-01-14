@@ -114,7 +114,7 @@ class ArticlesController
             if (!empty($posts)) {
                 $items = [];
                 foreach ($posts as $post) {
-                    $items[] = [
+                    $item = [
                         "id" => $post->getId(),
                         "title" => $post->getTitle(),
                         "content" => $post->getContent(),
@@ -125,7 +125,6 @@ class ArticlesController
                             "username" => $post->getUser()->getUserName(),
                             "full_name" => $post->getUser()->getFullName(),
                             "link" => Router::link("/users/" . $post->getUser()->getId(), $_ENV["URL_PREFIX"]),
-                            "avatar" => Router::link("/static/users/avatar1.ico", $_ENV["URL_PREFIX"])
                         ],
                         "date" => $post->getCreationDateTime(),
                         "url" => Router::link("/articles/" . $post->getId(), $_ENV["URL_PREFIX"]),
@@ -134,6 +133,13 @@ class ArticlesController
                             "save" => Router::link("/assets/images/save.svg", $_ENV["URL_PREFIX"])
                         ]
                     ];
+                    $avatar = $post->getUser()->getAvatar();
+                    if(isset($avatar)) {
+                        $item["user"]["avatar"] = Router::link("/static/users/" . $avatar, $_ENV["URL_PREFIX"]);
+                    } else {
+                        $item["user"]["avatar"] = Router::link("/assets/images/default_avatar.png", $_ENV["URL_PREFIX"]);
+                    }
+                    $items[] = $item;
                 }
                 $articles_context["items"] = $items;
             } else {
