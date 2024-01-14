@@ -77,7 +77,7 @@ export class FileValidator {
     ) {
         if (file.name.length === 0) return new Result(true, "File is empty");
         const fileType = file.name.substring(file.name.indexOf(".") + 1);
-        if (fileType.toLowerCase() in allowed_types) {
+        if (allowed_types.includes(fileType.toLowerCase())) {
             return new Result(true, "Type is valid");
         }
         return new Result(false, "Type is not valid");

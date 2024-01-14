@@ -43,8 +43,7 @@ async function submitForm(e) {
         if (avatar_validation.type.isNotValid() || avatar_validation.size.isNotValid()) {
             if (avatar_validation.type.isNotValid()) {
                 renderMessage("error", "Invalid file type");
-            }
-            if (avatar_validation.size.isNotValid()) {
+            } else {
                 renderMessage("error", "Too big file. Max ~10kb");
             }
             formData.delete("avatar");
