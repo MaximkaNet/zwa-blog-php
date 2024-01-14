@@ -11,6 +11,7 @@
 @import "admin/layout.css";
 @import "admin/profile.css";
 @import "admin/edit.css";
+@import "admin/posts.css";
 /*@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');*/
 /* Reset css*/
 * {
@@ -67,6 +68,7 @@
 
 .admin-body {
     padding: 30px;
+    overflow: auto;
 }
 
 .messages-container {

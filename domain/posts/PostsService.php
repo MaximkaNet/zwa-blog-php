@@ -84,6 +84,17 @@ class PostsService
     }
 
     /**
+     * Get all posts
+     * @param int $user_id
+     * @return array<Post>|null
+     */
+    public function getAllForUser(int $user_id): ?array
+    {
+        $posts_repo = PostsRepository::init($this->db_config->getPDO());
+        return $posts_repo->findAll(["user_id" => $user_id]);
+    }
+
+    /**
      * Find post with empty content
      * @return Post|null
      */
@@ -153,6 +164,12 @@ class PostsService
         ]);
     }
 
+    /**
+     * Delete post
+     * @param int $post_id
+     * @return void
+     * @throws ApplicationException Throws if post is not found
+     */
     public function delete(int $post_id): void
     {
         $posts_repo = PostsRepository::init($this->db_config->getPDO());

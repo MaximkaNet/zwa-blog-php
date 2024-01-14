@@ -1,0 +1,50 @@
+.admin-body .posts {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.posts-item.not-found {
+    color: var(--white-color);
+}
+
+.posts-item {
+    flex-basis: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    --gaps: 15px;
+    gap: var(--gaps);
+}
+
+.posts-item .posts-item-body {
+    flex-basis: calc(100% - 66px - var(--gaps));
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.posts-item-body .item-date {
+    color: #cccccc;
+}
+
+.posts-item .actions {
+    flex-basis: 66px;
+    display: flex;
+    gap: 10px;
+}
+
+.actions .edit-article {}
+
+.actions .edit-article > img {
+    max-width: 28px;
+    min-height: 28px;
+}
+
+.actions .delete-article {
+    max-width: 28px;
+    min-height: 28px;
+    cursor: pointer;
+}
