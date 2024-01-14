@@ -18,16 +18,34 @@
                 <div class="admin-body">
                     <div class="posts">
                         {{#items}}
-                            <div class="posts-item"></div>
+                            <div class="posts-item content-wrapper">
+                                <div class="posts-item-body">
+                                    <span class="item-title"><a href="{{link}}" class="link-white">{{title}}</a></span>
+                                    <span class="item-date">{{date}}</span>
+                                </div>
+                                <div class="actions">
+                                    <a href="{{edit.link}}" class="edit-article">
+                                        <img src="{{edit.image.src}}" alt="Edit icon">
+                                    </a>
+                                    <img class="delete-article"
+                                         src="{{delete.image.src}}"
+                                         alt="Delete icon"
+                                         data-post-id="{{id}}">
+                                </div>
+                            </div>
                         {{/items}}
                         {{^items}}
-                            <div class="posts-item">Posts not found</div>
+                            <div class="posts-item not-found content-wrapper">Posts not found</div>
                         {{/items}}
                     </div>
                 </div>
             {{/body}}
         </main>
     </div>
+    <div class="messages-container"></div>
+    {{#scripts}}
+        <script src="{{src}}" type="module"></script>
+    {{/scripts}}
 {{/admin}}
 </body>
 </html>
