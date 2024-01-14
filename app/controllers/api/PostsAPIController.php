@@ -80,7 +80,7 @@ class PostsAPIController
             if (empty($_SESSION["user"])) {
                 throw new ApplicationException("User is not authorized", 401);
             } elseif ($_SESSION["user"]["role"] !== UserRole::ADMIN) {
-                throw new ApplicationException("Access denied", 403);
+                throw new ApplicationException("Access denied", 400);
             }
             $service = PostsService::get();
             $service->delete($id);
