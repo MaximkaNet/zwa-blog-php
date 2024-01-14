@@ -2,32 +2,9 @@ import {API_URL_V1, PREFIX} from "./constants.js";
 import {renderMessage} from "./utils/message.js";
 
 async function sendData({post_id}) {
-    const response = await fetch(API_URL_V1 + `/posts/${post_id}/delete`, {method: "delete"});
+    const response = await fetch(API_URL_V1 + `/posts/${post_id}/delete`, {method: "post"});
     return await response.json();
 }
-
-// const articleDeleteButtons = document.querySelectorAll(".delete-article");
-//
-// articleDeleteButtons.forEach((value, key, parent) => {
-//     value.addEventListener("click", async (e) => {
-//         const post_id = Number(e.target.dataset.postId);
-//         if (isNaN(post_id)) {
-//             renderMessage("error", "Post id is not a number");
-//             return;
-//         }
-//         const {errors, data, message} = await sendData({
-//             post_id
-//         });
-//         if (errors.length === 0) {
-//             renderMessage("success", message ? message : "Changes saved");
-//             e.target.remove();
-//         } else {
-//             errors.map((el) => {
-//                 renderMessage("error", el.message);
-//             });
-//         }
-//     });
-// })
 
 const articles = document.querySelectorAll(".posts-item");
 const articlesContainer = document.querySelector(".posts");
