@@ -5,6 +5,7 @@ namespace app\controllers\api;
 use app\core\exception\ApplicationException;
 use app\core\http\Response;
 use app\core\http\ServerRequest;
+use domain\categories\CategoriesService;
 use domain\posts\PostsService;
 use domain\users\UserRole;
 
@@ -23,11 +24,12 @@ class PostsAPIController
             }
             $request = (new ServerRequest())->getParsedBody();
             $posts_service = PostsService::get();
+            $category_service = CategoriesService::get();
             $data = [
                 "title" => $request["title"] ?? "The title",
                 "content" => $request["content"] ?? "",
                 "user_id" => $_SESSION["user"]["id"],
-                "category_id" => $request["category_id"]
+                "category_id" => $request["category_id"] ?? $category_service->getByName("")
             ];
             $posts_service->create(...$data);
             $response->setResponseCode(201);

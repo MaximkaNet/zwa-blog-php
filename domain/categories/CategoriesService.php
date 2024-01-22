@@ -54,4 +54,14 @@ class CategoriesService
         if(empty($category)) throw new CategoryException("Category not found");
         return $category;
     }
+
+    public function getByName(string $name): Category
+    {
+        $repo = CategoriesRepository::init($this->db_config->getPDO());
+        $category = $repo->findOne([
+            "name" => $name
+        ]);
+        if(empty($category)) throw new CategoryException("Category not found");
+        return $category;
+    }
 }
