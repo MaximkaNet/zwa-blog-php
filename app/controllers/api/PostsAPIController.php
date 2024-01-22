@@ -29,7 +29,7 @@ class PostsAPIController
                 "title" => $request["title"] ?? "The title",
                 "content" => $request["content"] ?? "",
                 "user_id" => $_SESSION["user"]["id"],
-                "category_id" => $request["category_id"] ?? $category_service->getByName("")
+                "category_id" => $request["category_id"] ?? $category_service->getByName("")->getId()
             ];
             $posts_service->create(...$data);
             $response->setResponseCode(201);
