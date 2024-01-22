@@ -39,4 +39,19 @@ class CategoriesService
         $categories = $repo->findAll();
         return $categories ?? [];
     }
+
+    /**
+     * @param string $display_name
+     * @return Category
+     * @throws CategoryException Throws if category is not found
+     */
+    public function getByDisplayName(string $display_name): Category
+    {
+        $repo = CategoriesRepository::init($this->db_config->getPDO());
+        $category = $repo->findOne([
+            "display_name" => $display_name
+        ]);
+        if(empty($category)) throw new CategoryException("Category not found");
+        return $category;
+    }
 }

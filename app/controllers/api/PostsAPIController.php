@@ -16,8 +16,22 @@ class PostsAPIController
         header("Content-Type: application/json");
         $response = new Response();
         try {
-            // ...
-            throw new ApplicationException("Service unavailable");
+            if (empty($_SESSION["user"])) {
+                throw new ApplicationException("User is not authorized", 401);
+            } elseif ($_SESSION["user"]["role"] !== UserRole::ADMIN) {
+                throw new ApplicationException("Access denied", 403);
+            }
+            $request = (new ServerRequest())->getParsedBody();
+            $posts_service = PostsService::get();
+            $data = [
+                "title" => $request["title"] ?? "The title",
+                "content" => $request["content"] ?? "",
+                "user_id" => $_SESSION["user"]["id"],
+                "category_id" => $request["category_id"]
+            ];
+            $posts_service->create(...$data);
+            $response->setResponseCode(201);
+            $response->setMessage("Post was created");
         } catch (ApplicationException $e) {
             $code = is_numeric($e->getCode()) ? $e->getCode() : null;
             $response->setResponseCode($code);
