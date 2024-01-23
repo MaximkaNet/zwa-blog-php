@@ -21,4 +21,6 @@ require "../config/routes/index.php";
 
 $app->applyRouter($router);
 
+$app->createFolders(__DIR__ . "/../");
+
 $app->run();

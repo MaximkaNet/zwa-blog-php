@@ -21,6 +21,18 @@ class Application
         $this->meta_head->setFaviconLink(Router::link("/assets/images/favicon.ico", $_ENV["URL_PREFIX"]));
     }
 
+    public function createFolders(string $project_root, array|string $paths = ["/static", "/static/users"]): void
+    {
+        foreach ($paths as $path) {
+            $path_to_folder = $project_root . $path;
+            if (!file_exists($path_to_folder)){
+                mkdir($path_to_folder);
+            } elseif (file_exists($path_to_folder) and !is_dir($path_to_folder)) {
+                mkdir($path_to_folder);
+            }
+        }
+    }
+
     /**
      * Create router
      * @param string|null $prefix
