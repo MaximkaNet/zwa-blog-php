@@ -64,7 +64,7 @@ export class FileValidator {
      * @param max_size default 1000 * 1000 * 5 (5MB)
      * @returns {Result}
      */
-    static size(file, max_size = 1000 * 1000 * 2) {
+    static size(file, max_size = 1000 * 1000 * 5) {
         if (file.size < max_size) {
             return new Result(true, "File is valid");
         }
