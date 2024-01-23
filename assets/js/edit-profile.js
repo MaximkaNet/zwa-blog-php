@@ -41,13 +41,15 @@ async function submitForm(e) {
             size: FileValidator.size(avatar)
         };
         if (avatar_validation.type.isNotValid() || avatar_validation.size.isNotValid()) {
-            if (avatar_validation.type.isNotValid()) {
-                renderMessage("error", "Invalid file type. File was removed");
-            } else {
-                renderMessage("error", "Too big file. Max ~10kb. File was removed");
-            }
             formData.delete("avatar");
             removeFileFromAvatarInput();
+            const validation_type_message = avatar_validation.type.getMessage();
+            const validation_size_message = avatar_validation.size.getMessage();
+            if (avatar_validation.type.isNotValid()) {
+                renderMessage("error",  `${validation_type_message} File was removed`);
+            } else {
+                renderMessage("error", `${validation_size_message} File was removed`);
+            }
             return;
         }
     }

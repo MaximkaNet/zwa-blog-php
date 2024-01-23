@@ -61,14 +61,14 @@ export class FileValidator {
     /**
      * Check file size
      * @param file
-     * @param max_size default 10000 (~10kb)
+     * @param max_size default 1000 * 1000 * 5 (5MB)
      * @returns {Result}
      */
-    static size(file, max_size = 10000) {
+    static size(file, max_size = 1000 * 1000 * 2) {
         if (file.size < max_size) {
             return new Result(true, "File is valid");
         }
-        return new Result(false, "File is not valid");
+        return new Result(false, `Too big file. Max file size is: ${max_size / 1000 / 1000} MB`);
     }
 
     static type(
@@ -80,6 +80,6 @@ export class FileValidator {
         if (allowed_types.includes(fileType.toLowerCase())) {
             return new Result(true, "Type is valid");
         }
-        return new Result(false, "Type is not valid");
+        return new Result(false, "Invalid file type");
     }
 }
