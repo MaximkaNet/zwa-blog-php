@@ -43,6 +43,10 @@
     gap: 10px;
 }
 
+.avatar-container div>img {
+    max-width: 180px;
+}
+
 .edit-icon {
     max-width: 20px;
     cursor: pointer;
